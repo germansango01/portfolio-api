@@ -2,14 +2,12 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Models\User;
-use Illuminate\Http\Request;
-use Illuminate\Http\JsonResponse;
 use App\Http\Requests\LoginRequest;
-use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
+use App\Models\User;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Http\Controllers\Api\BaseController;
 
 class AuthController extends BaseController
 {
@@ -26,7 +24,7 @@ class AuthController extends BaseController
             // If authentication fails, return an error response
             return $this->sendError(__('auth.failed'));
         }
-        
+
         // Authentication passed, retrieve the user
         $user = Auth::user();
         // If authentication is successful, generate a token
@@ -37,16 +35,14 @@ class AuthController extends BaseController
 
     public function logout(Request $request): JsonResponse
     {
-        $request->user()->currentAccessToken()->delete();
-
         // Revoke the token that was used to authenticate the current request
         $request->user()->token()->revoke();
 
-        return $this->sendsuccess(__('auth.success_logout'));
+        return $this->sendSuccess(__('auth.success_logout'));
     }
 
     /**
-     * Undocumented function
+     * Undocumented function.
      *
      * @param Request $request
      * @return JsonResponse
@@ -57,5 +53,4 @@ class AuthController extends BaseController
 
         return $this->sendData(['user' => $user], __('auth.user_retrieved'));
     }
-
 }

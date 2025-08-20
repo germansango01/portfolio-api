@@ -168,17 +168,10 @@ class BaseController extends Controller
     /**
      * Send a no content response.
      *
-     * @param string $message
-     * @param int $code
      * @return JsonResponse
      */
-    public function sendNoContent(string $message = 'No Content', int $code = Response::HTTP_NO_CONTENT): JsonResponse
+    public function sendNoContent(): JsonResponse
     {
-        $response = [
-            'success' => true,
-            'message' => $message,
-        ];
-
-        return response()->json($response, $code);
+        return response()->json(null, Response::HTTP_NO_CONTENT);
     }
 }
