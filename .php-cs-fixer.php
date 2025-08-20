@@ -11,9 +11,7 @@ $rules = [
     ],
     'blank_line_after_namespace' => true,
     'blank_line_after_opening_tag' => true,
-    'blank_line_before_statement' => [
-        'statements' => ['return'],
-    ],
+    'blank_line_before_statement' => ['statements' => ['return']],
     'cast_spaces' => true,
     'class_attributes_separation' => [
         'elements' => [
@@ -71,7 +69,6 @@ $rules = [
     'no_whitespace_before_comma_in_array' => true,
     'no_whitespace_in_blank_line' => true,
     'normalize_index_brace' => true,
-    'not_operator_with_successor_space' => false,
     'object_operator_without_whitespace' => true,
     'ordered_imports' => ['sort_algorithm' => 'alpha'],
     'phpdoc_indent' => true,
@@ -109,6 +106,7 @@ $rules = [
     'visibility_required' => ['elements' => ['method', 'property']],
     'whitespace_after_comma_in_array' => true,
     'no_unused_imports' => true,
+    'no_superfluous_phpdoc_tags' => true,
 ];
 
 $finder = Finder::create()
@@ -126,10 +124,8 @@ $finder = Finder::create()
     ->ignoreDotFiles(true)
     ->ignoreVCS(true);
 
-$config = new Config();
-
-return $config
-    ->setFinder($finder)
+return (new Config())
     ->setRules($rules)
+    ->setFinder($finder)
     ->setRiskyAllowed(true)
     ->setUsingCache(true);
