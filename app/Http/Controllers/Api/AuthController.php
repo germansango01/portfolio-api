@@ -13,9 +13,6 @@ class AuthController extends BaseController
 {
     /**
      * Handle user login.
-     *
-     * @param LoginRequest $request
-     * @return JsonResponse
      */
     public function login(LoginRequest $request): JsonResponse
     {
@@ -43,9 +40,6 @@ class AuthController extends BaseController
 
     /**
      * Undocumented function.
-     *
-     * @param Request $request
-     * @return JsonResponse
      */
     public function user(Request $request): JsonResponse
     {

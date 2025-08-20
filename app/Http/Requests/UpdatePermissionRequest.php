@@ -54,7 +54,6 @@ class UpdatePermissionRequest extends FormRequest
     /**
      * Failed Validation function.
      *
-     * @param Validator $validator
      * @return void
      */
     protected function failedValidation(Validator $validator)
