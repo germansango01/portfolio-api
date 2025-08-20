@@ -130,8 +130,8 @@ class BaseController extends Controller
     /**
      * Send a no content response.
      */
-    public function sendNoContent(): JsonResponse
+    public function sendNoContent(): Response
     {
-        return response()->json(null, Response::HTTP_NO_CONTENT);
+        return response('', Response::HTTP_NO_CONTENT);
     }
 }

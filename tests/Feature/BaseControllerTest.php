@@ -20,29 +20,18 @@ class BaseControllerTest extends TestCase
     {
         $response = $this->controller->sendSuccess('Success message');
 
-        $response->assertStatus(Response::HTTP_OK);
+        $this->assertEquals(Response::HTTP_OK, $response->getStatusCode());
         $this->assertEquals([
             'success' => true,
             'message' => 'Success message',
         ], $response->getData(true));
     }
 
-    public function testSendSuccess1()
-{
-    $response = $this->controller->sendSuccess('Success message');
-
-    $this->assertEquals(Response::HTTP_OK, $response->getStatusCode());
-    $this->assertEquals([
-        'success' => true,
-        'message' => 'Success message',
-    ], $response->getData(true));
-}
-
     public function testSendError()
     {
         $response = $this->controller->sendError('Error message');
 
-        $response->assertStatus(Response::HTTP_BAD_REQUEST);
+        $this->assertEquals(Response::HTTP_BAD_REQUEST, $response->getStatusCode());
         $this->assertEquals([
             'success' => false,
             'message' => 'Error message',
@@ -54,7 +43,7 @@ class BaseControllerTest extends TestCase
         $data = ['key' => 'value'];
         $response = $this->controller->sendData($data, 'Data message');
 
-        $response->assertStatus(Response::HTTP_OK);
+        $this->assertEquals(Response::HTTP_OK, $response->getStatusCode());
         $this->assertEquals([
             'success' => true,
             'message' => 'Data message',
@@ -67,7 +56,7 @@ class BaseControllerTest extends TestCase
         $errors = ['field' => ['The field is required']];
         $response = $this->controller->sendValidationError($errors);
 
-        $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
+        $this->assertEquals(Response::HTTP_UNPROCESSABLE_ENTITY, $response->getStatusCode());
         $this->assertEquals([
             'success' => false,
             'message' => 'Validation Error',
@@ -79,7 +68,7 @@ class BaseControllerTest extends TestCase
     {
         $response = $this->controller->sendUnauthorized();
 
-        $response->assertStatus(Response::HTTP_UNAUTHORIZED);
+        $this->assertEquals(Response::HTTP_UNAUTHORIZED, $response->getStatusCode());
         $this->assertEquals([
             'success' => false,
             'message' => 'Unauthorized',
@@ -90,7 +79,7 @@ class BaseControllerTest extends TestCase
     {
         $response = $this->controller->sendForbidden();
 
-        $response->assertStatus(Response::HTTP_FORBIDDEN);
+        $this->assertEquals(Response::HTTP_FORBIDDEN, $response->getStatusCode());
         $this->assertEquals([
             'success' => false,
             'message' => 'Forbidden',
@@ -101,7 +90,7 @@ class BaseControllerTest extends TestCase
     {
         $response = $this->controller->sendNotFound();
 
-        $response->assertStatus(Response::HTTP_NOT_FOUND);
+        $this->assertEquals(Response::HTTP_NOT_FOUND, $response->getStatusCode());
         $this->assertEquals([
             'success' => false,
             'message' => 'Not Found',
@@ -112,7 +101,7 @@ class BaseControllerTest extends TestCase
     {
         $response = $this->controller->sendInternalError();
 
-        $response->assertStatus(Response::HTTP_INTERNAL_SERVER_ERROR);
+        $this->assertEquals(Response::HTTP_INTERNAL_SERVER_ERROR, $response->getStatusCode());
         $this->assertEquals([
             'success' => false,
             'message' => 'Internal Server Error',
@@ -123,7 +112,7 @@ class BaseControllerTest extends TestCase
     {
         $response = $this->controller->sendCreated('Created successfully');
 
-        $response->assertStatus(Response::HTTP_CREATED);
+        $this->assertEquals(Response::HTTP_CREATED, $response->getStatusCode());
         $this->assertEquals([
             'success' => true,
             'message' => 'Created successfully',
@@ -134,7 +123,7 @@ class BaseControllerTest extends TestCase
     {
         $response = $this->controller->sendNoContent();
 
-        $response->assertStatus(Response::HTTP_NO_CONTENT);
+        $this->assertEquals(Response::HTTP_NO_CONTENT, $response->getStatusCode());
         $this->assertEmpty($response->getContent());
     }
 }
