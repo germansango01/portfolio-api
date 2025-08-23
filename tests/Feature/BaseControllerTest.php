@@ -51,19 +51,6 @@ class BaseControllerTest extends TestCase
         ], $response->getData(true));
     }
 
-    public function testSendValidationError()
-    {
-        $errors = ['field' => ['The field is required']];
-        $response = $this->controller->sendValidationError($errors);
-
-        $this->assertEquals(Response::HTTP_UNPROCESSABLE_ENTITY, $response->getStatusCode());
-        $this->assertEquals([
-            'success' => false,
-            'message' => 'Validation Error',
-            'errors' => $errors,
-        ], $response->getData(true));
-    }
-
     public function testSendUnauthorized()
     {
         $response = $this->controller->sendUnauthorized();

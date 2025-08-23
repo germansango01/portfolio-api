@@ -19,7 +19,7 @@ class LoginRequestTest extends TestCase
 
         $response->assertJsonFragment([
             'success' => false,
-            'message' => 'Validation Error',
+            'message' => __('messages.validation_error'),
         ]);
 
         $this->assertContains(__('validation.email_required'), $response->json('errors'));

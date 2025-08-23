@@ -49,20 +49,6 @@ class BaseController extends Controller
     }
 
     /**
-     * Send a validation error response.
-     */
-    public function sendValidationError(array $errors, string $message = 'Validation Error', int $code = Response::HTTP_UNPROCESSABLE_ENTITY): JsonResponse
-    {
-        $response = [
-            'success' => false,
-            'message' => $message,
-            'errors' => $errors,
-        ];
-
-        return response()->json($response, $code);
-    }
-
-    /**
      * Send an unauthorized response.
      */
     public function sendUnauthorized(string $message = 'Unauthorized', int $code = Response::HTTP_UNAUTHORIZED): JsonResponse
