@@ -3,11 +3,14 @@
 namespace Tests\Feature\Controllers\Api;
 
 use App\Http\Controllers\Api\BaseController;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Response;
 use Tests\TestCase;
 
 class BaseControllerTest extends TestCase
 {
+    use RefreshDatabase;
+
     protected BaseController $controller;
 
     protected function setUp(): void

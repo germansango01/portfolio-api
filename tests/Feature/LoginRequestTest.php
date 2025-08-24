@@ -2,10 +2,13 @@
 
 namespace Tests\Feature;
 
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class LoginRequestTest extends TestCase
 {
+    use RefreshDatabase;
+
     public function test_returns_validation_errors_when_email_and_password_are_missing()
     {
         $response = $this->postJson('/api/login', []);
