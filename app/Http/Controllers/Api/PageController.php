@@ -53,16 +53,17 @@ class PageController extends BaseController
     public function posts(Request $request): JsonResponse
     {
         $perPage = $request->integer('per_page', 15);
+        $page = $request->integer('page', 1);
 
         $posts = $this->basePostQuery()
             ->latest()
-            ->paginate($perPage);
+            ->paginate($perPage, ['*'], 'page', $page);
 
         $paginated = PostResource::collection($posts)->response()->getData(true);
 
         return $this->sendData([
             'posts' => $paginated['data'],
-            'meta' => $paginated['meta'],
+            'meta'  => $paginated['meta'],
             'links' => $paginated['links'],
         ], __('messages.posts_retrieved'));
     }
@@ -72,7 +73,12 @@ class PageController extends BaseController
      */
     private function basePostQuery()
     {
-        return Post::withCount('comments')
-            ->with('category:id,name', 'user:id,name');
+        return Post::select('id', 'title', 'slug', 'category_id', 'user_id', 'created_at')
+        ->withCount('comments')
+        ->with([
+            'category:id,name',
+            'tags:id,name',
+            'user:id,name',
+        ]);
     }
 }

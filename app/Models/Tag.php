@@ -15,7 +15,7 @@ class Tag extends Model
      *
      * @var list<string>
      */
-    protected $fillable = ['name'];
+    protected $fillable = ['name', 'slug'];
 
     /**
      * The posts that belong to the tag.
