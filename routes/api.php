@@ -15,5 +15,6 @@ Route::group(['middleware' => 'auth:api'], function () {
 
     Route::controller(PageController::class)->group(function () {
         Route::get('/blog', 'blog');
+        Route::get('/posts', 'posts');
     });
 });

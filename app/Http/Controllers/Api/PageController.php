@@ -6,6 +6,7 @@ use App\Http\Resources\PostResource;
 use App\Models\Category;
 use App\Models\Post;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class PageController extends BaseController
 {
@@ -47,8 +48,32 @@ class PageController extends BaseController
                 'most_viewed_posts' => PostResource::collection($mostViewedPosts),
                 'posts_by_category' => $postsByCategory,
             ],
-            __('auth.success_login')
+            __('messages.blog_retrieved')
         );
+    }
 
+    /**
+     * Get paginated posts.
+     */
+    public function posts(Request $request): JsonResponse
+    {
+        $perPage = $request->input('per_page', 15);
+
+        $posts = Post::withCount('comments')
+            ->with('category:id,name', 'user:id,name')
+            ->orderBy('created_at', 'desc')
+            ->paginate($perPage);
+
+        // Obtenemos los datos de la respuesta del recurso para construir nuestra respuesta paginada personalizada
+        $paginatedResponse = PostResource::collection($posts)->response()->getData(true);
+
+        return $this->sendData(
+            [
+                'posts' => $paginatedResponse['data'],
+                'meta' => $paginatedResponse['meta'],
+                'links' => $paginatedResponse['links'],
+            ],
+            __('messages.posts_retrieved')
+        );
     }
 }
