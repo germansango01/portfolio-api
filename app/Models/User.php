@@ -12,7 +12,9 @@ use Laravel\Passport\HasApiTokens;
 
 class User extends Authenticatable implements OAuthenticatable
 {
+    /** @use HasApiTokens<\Laravel\Passport\PassportServiceProvider> */
     /** @use HasFactory<\Database\Factories\UserFactory> */
+    /** @use Notifiable<\Illuminate\Notifications\Notification> */
     use HasApiTokens, HasFactory, Notifiable;
 
     /**

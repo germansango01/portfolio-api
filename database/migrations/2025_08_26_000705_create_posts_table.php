@@ -15,6 +15,8 @@ return new class extends Migration {
             $table->string('title')->unique();
             $table->string('slug')->nullable();
             $table->text('content')->nullable(false);
+            $table->integer('views')->default(0);
+            $table->string('image_url')->nullable();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignId('category_id')->nullable()->constrained()->onDelete('set null');
             $table->timestamps();
