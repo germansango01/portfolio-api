@@ -76,8 +76,8 @@ class PageController extends BaseController
         return Post::select('id', 'title', 'slug', 'category_id', 'user_id', 'created_at')
         ->withCount('comments')
         ->with([
-            'category:id,name',
-            'tags:id,name',
+            'category:id,name,slug',
+            'tags:id,name,slug',
             'user:id,name',
         ]);
     }

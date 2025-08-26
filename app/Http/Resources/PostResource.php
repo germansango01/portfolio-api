@@ -41,7 +41,6 @@ class PostResource extends JsonResource
                     'slug' => $tag->slug,
                 ])
             ),
-
             'comments_count' => $this->when(isset($this->comments_count), $this->comments_count),
         ];
     }
