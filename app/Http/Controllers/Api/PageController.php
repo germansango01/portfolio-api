@@ -69,11 +69,51 @@ class PageController extends BaseController
     }
 
     /**
+     * Search for posts with optional filters.
+     */
+    public function search(Request $request): JsonResponse
+    {
+        $term = $request->input('q');
+        $categoryId = $request->integer('category');
+        $tagId = $request->integer('tag');
+        $authorId = $request->integer('author');
+        $perPage = $request->integer('per_page', 15);
+        $page = $request->integer('page', 1);
+
+        // Validación rápida: si no hay término ni filtros, error
+        if (empty($term) && empty($categoryId) && empty($tagId) && empty($authorId)) {
+            return $this->sendError(__('validation.required', ['attribute' => 'q']), 422);
+        }
+
+        $posts = $this->basePostQuery()
+            ->when($term, function ($q) use ($term) {
+                $q->where(function ($sub) use ($term) {
+                    $sub->where('title', 'LIKE', "%{$term}%")
+                        ->orWhere('excerpt', 'LIKE', "%{$term}%")
+                        ->orWhere('content', 'LIKE', "%{$term}%");
+                });
+            })
+            ->when($categoryId, fn ($q) => $q->where('category_id', $categoryId))
+            ->when($authorId, fn ($q) => $q->where('user_id', $authorId))
+            ->when($tagId, fn ($q) => $q->whereHas('tags', fn ($t) => $t->where('tags.id', $tagId)))
+            ->latest()
+            ->paginate($perPage, ['*'], 'page', $page);
+
+        $paginated = PostResource::collection($posts)->response()->getData(true);
+
+        return $this->sendData([
+            'posts' => $paginated['data'],
+            'meta'  => $paginated['meta'],
+            'links' => $paginated['links'],
+        ], __('messages.posts_retrieved'));
+}
+
+    /**
      * Base query for posts with common relationships and counts.
      */
     private function basePostQuery()
     {
-        return Post::select('id', 'title', 'slug', 'category_id', 'user_id', 'created_at')
+        return Post::select('id', 'title', 'slug', 'content', 'image_url', 'views', 'category_id', 'user_id', 'created_at')
         ->withCount('comments')
         ->with([
             'category:id,name,slug',
