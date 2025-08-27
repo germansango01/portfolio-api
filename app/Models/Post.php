@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -40,7 +41,8 @@ class Post extends Model
      * Scope a query to include common relationships for posts.
      * Selecting only necessary columns improves performance.
      */
-    public function scopeWithRelations(Builder $query): void
+    #[Scope]
+    protected function withRelations(Builder $query): void
     {
         $query->with(['user:id,name', 'category:id,name,slug', 'tags:id,name,slug']);
     }
@@ -48,7 +50,8 @@ class Post extends Model
     /**
      * Scope a query to search for a term in title or content.
      */
-    public function scopeSearchTerm(Builder $query, ?string $term): void
+    #[Scope]
+    public function searchTerm(Builder $query, ?string $term): void
     {
         $query->when($term, function (Builder $q) use ($term) {
             $q->where('title', 'like', "%{$term}%")
@@ -59,7 +62,8 @@ class Post extends Model
     /**
      * Scope a query to filter by category.
      */
-    public function scopeFilterByCategory(Builder $query, ?int $categoryId): void
+    #[Scope]
+    public function filterByCategory(Builder $query, ?int $categoryId): void
     {
         $query->when($categoryId, fn (Builder $q) => $q->where('category_id', $categoryId));
     }
@@ -67,7 +71,8 @@ class Post extends Model
     /**
      * Scope a query to filter by author.
      */
-    public function scopeFilterByAuthor(Builder $query, ?int $authorId): void
+    #[Scope]
+    public function filterByAuthor(Builder $query, ?int $authorId): void
     {
         $query->when($authorId, fn (Builder $q) => $q->where('user_id', $authorId));
     }
@@ -75,7 +80,8 @@ class Post extends Model
     /**
      * Scope a query to filter by tag.
      */
-    public function scopeFilterByTag(Builder $query, ?int $tagId): void
+    #[Scope]
+    public function filterByTag(Builder $query, ?int $tagId): void
     {
         $query->when($tagId, fn (Builder $q) => $q->whereHas('tags', fn (Builder $sub) => $sub->where('tags.id', $tagId)));
     }
