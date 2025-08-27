@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Http\Requests\SearchRequest;
 use App\Http\Resources\PostResource;
 use App\Models\Category;
 use App\Models\Post;
@@ -71,31 +72,28 @@ class PageController extends BaseController
     /**
      * Search for posts with optional filters.
      */
-    public function search(Request $request): JsonResponse
+    public function search(SearchRequest $request): JsonResponse
     {
-        $term = $request->input('q');
-        $categoryId = $request->integer('category');
-        $tagId = $request->integer('tag');
-        $authorId = $request->integer('author');
-        $perPage = $request->integer('per_page', 15);
-        $page = $request->integer('page', 1);
-
-        // Validación rápida: si no hay término ni filtros, error
-        if (empty($term) && empty($categoryId) && empty($tagId) && empty($authorId)) {
-            return $this->sendError(__('validation.required', ['attribute' => 'q']), 422);
-        }
+        // Obtiene los datos ya validados desde el FormRequest.
+        // El método validated() puede recibir una clave y un valor por defecto.
+        $term = $request->validated('q');
+        $categoryId = $request->validated('category');
+        $tagId = $request->validated('tag');
+        $authorId = $request->validated('author');
+        $perPage = $request->validated('per_page', 15);
+        $page = $request->validated('page', 1);
 
         $posts = $this->basePostQuery()
-            ->when($term, function ($q) use ($term) {
-                $q->where(function ($sub) use ($term) {
-                    $sub->where('title', 'LIKE', "%{$term}%")
-                        ->orWhere('excerpt', 'LIKE', "%{$term}%")
+            // Aplica los filtros condicionalmente solo si el valor no es nulo.
+            ->when($term, function ($query) use ($term) {
+                $query->where(function ($subQuery) use ($term) {
+                    $subQuery->where('title', 'LIKE', "%{$term}%")
                         ->orWhere('content', 'LIKE', "%{$term}%");
                 });
             })
-            ->when($categoryId, fn ($q) => $q->where('category_id', $categoryId))
-            ->when($authorId, fn ($q) => $q->where('user_id', $authorId))
-            ->when($tagId, fn ($q) => $q->whereHas('tags', fn ($t) => $t->where('tags.id', $tagId)))
+            ->when($categoryId, fn ($query) => $query->where('category_id', $categoryId))
+            ->when($authorId, fn ($query) => $query->where('user_id', $authorId))
+            ->when($tagId, fn ($query) => $query->whereHas('tags', fn ($tagQuery) => $tagQuery->where('tags.id', $tagId)))
             ->latest()
             ->paginate($perPage, ['*'], 'page', $page);
 
@@ -106,7 +104,7 @@ class PageController extends BaseController
             'meta'  => $paginated['meta'],
             'links' => $paginated['links'],
         ], __('messages.posts_retrieved'));
-}
+    }
 
     /**
      * Base query for posts with common relationships and counts.
