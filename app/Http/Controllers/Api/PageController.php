@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Requests\SearchRequest;
+use App\Http\Requests\PostRequest;
 use App\Http\Resources\PostResource;
 use App\Models\Category;
 use App\Models\Post;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 
 class PageController extends BaseController
@@ -41,48 +42,39 @@ class PageController extends BaseController
     /**
      * Retrieve paginated list of posts.
      */
-    public function posts(PostsRequest $request): JsonResponse
+    public function posts(PostRequest $request): JsonResponse
     {
-        $validated = $request->validated();
+        $query = Post::withRelations()->latest();
 
-        $posts = Post::withRelations()
-            ->latest()
-            ->paginate(
-                $validated['per_page'] ?? 15,
-                ['*'],
-                'page',
-                $validated['page'] ?? 1
-            );
-
-        $paginated = PostResource::collection($posts)->response()->getData(true);
-
-        return $this->sendData([
-            'posts' => $paginated['data'],
-            'meta'  => $paginated['meta'],
-            'links' => $paginated['links'],
-        ], __('messages.posts_retrieved'));
+        return $this->paginateAndRespond($query, $request->validated());
     }
 
     /**
      * Search for posts with optional filters.
      */
-    public function search(SearchRequest $request): JsonResponse
+    public function search(PostRequest $request): JsonResponse
     {
         $validated = $request->validated();
 
-        $posts = Post::withRelations()
+        $query = Post::withRelations()
             ->searchTerm($validated['q'] ?? null)
             ->filterByCategory($validated['category'] ?? null)
             ->filterByAuthor($validated['author'] ?? null)
             ->filterByTag($validated['tag'] ?? null)
-            ->latest()
-            ->paginate(
-                $validated['per_page'] ?? 15,
-                ['*'],
-                'page',
-                $validated['page'] ?? 1
-            );
+            ->latest();
 
+        return $this->paginateAndRespond($query, $validated);
+    }
+
+    /**
+     * Paginate the query and format the response.
+     */
+    private function paginateAndRespond(Builder $query, array $validated): JsonResponse
+    {
+        $posts = $query->paginate(
+            perPage: $validated['per_page'] ?? 15,
+            page: $validated['page'] ?? 1
+        );
         $paginated = PostResource::collection($posts)->response()->getData(true);
 
         return $this->sendData([
