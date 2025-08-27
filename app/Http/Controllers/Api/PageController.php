@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Http\Requests\PostsRequest;
 use App\Http\Requests\SearchRequest;
 use App\Http\Resources\PostResource;
 use App\Models\Category;
 use App\Models\Post;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
 class PageController extends BaseController
 {
@@ -51,10 +51,10 @@ class PageController extends BaseController
     /**
      * Retrieve paginated list of posts.
      */
-    public function posts(Request $request): JsonResponse
+    public function posts(PostsRequest $request): JsonResponse
     {
-        $perPage = $request->integer('per_page', 15);
-        $page = $request->integer('page', 1);
+        $perPage = $request->validated('per_page', 15);
+        $page = $request->validated('page', 1);
 
         $posts = $this->basePostQuery()
             ->latest()
@@ -75,7 +75,6 @@ class PageController extends BaseController
     public function search(SearchRequest $request): JsonResponse
     {
         // Obtiene los datos ya validados desde el FormRequest.
-        // El método validated() puede recibir una clave y un valor por defecto.
         $term = $request->validated('q');
         $categoryId = $request->validated('category');
         $tagId = $request->validated('tag');
