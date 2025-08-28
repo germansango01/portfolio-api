@@ -1,7 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
-use App\Http\Controllers\Api\PageController;
+use App\Http\Controllers\Api\PostController;
 use Illuminate\Support\Facades\Route;
 
 /* Rutas públicas */
@@ -16,7 +16,7 @@ Route::group(['middleware' => 'auth:api'], function () {
         Route::get('/user', 'user');
     });
     /* Rutas de páginas */
-    Route::controller(PageController::class)->group(function () {
+    Route::controller(PostController::class)->group(function () {
         Route::get('/blog', 'blog');
         Route::get('/posts', 'posts');
         Route::get('/search', 'search');

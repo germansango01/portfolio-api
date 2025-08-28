@@ -26,6 +26,5 @@ class PostFactory extends Factory
             'image_url' => $this->faker->imageUrl(800, 600, 'nature', true),
             'views' => $this->faker->numberBetween(0, 5000),
         ];
-
     }
 }

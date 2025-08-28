@@ -17,7 +17,11 @@ class MenuItemFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'name' => $this->faker->unique()->word,
+            'title' => $this->faker->sentence,
+            'url' => $this->faker->url,
+            'parent_id' => null,
+            'position' => $this->faker->numberBetween(1, 10),
         ];
     }
 }

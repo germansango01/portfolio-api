@@ -14,6 +14,13 @@ class Post extends Model
     use HasFactory;
 
     /**
+     * The attributes that are mass assignable.
+     *
+     * @var list<string>
+     */
+    protected $fillable = ['title', 'slug', 'content'];
+
+    /**
      * Get the user that owns the post.
      */
     public function user(): BelongsTo

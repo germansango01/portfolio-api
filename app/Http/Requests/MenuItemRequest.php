@@ -11,7 +11,7 @@ class MenuItemRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,12 @@ class MenuItemRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'name' => 'required|string|unique:menu_items,name',
+            'title' => 'required|string',
+            'url' => 'required|url',
+            'parent_id' => 'nullable|exists:menu_items,id',
+            'position' => 'required|integer',
+            'menu_id' => 'required|exists:menus,id',
         ];
     }
 }

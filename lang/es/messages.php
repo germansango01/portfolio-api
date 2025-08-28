@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 return [
     'todo_not_found'        => 'Tarea no encontrada',
     'unauthorized_action'   => 'No está autorizado para realizar esta acción',

@@ -9,7 +9,7 @@ use App\Models\Post;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 
-class PageController extends BaseController
+class PostController extends BaseController
 {
     /**
      * Retrieve blog data including latest posts, most viewed posts, and posts by category.

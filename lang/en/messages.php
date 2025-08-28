@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 return [
     'todo_not_found'        => 'ToDo not found',
     'unauthorized_action'   => 'You are not authorized to perform this action',

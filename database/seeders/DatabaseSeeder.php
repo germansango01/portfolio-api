@@ -19,6 +19,8 @@ class DatabaseSeeder extends Seeder
             PostSeeder::class,
             PostTagSeeder::class,
             CommentSeeder::class,
+            MenuSeeder::class,
+            MenuItemSeeder::class,
         ]);
     }
 }
