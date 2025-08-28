@@ -17,7 +17,6 @@ class PageController extends BaseController
     public function blog(): JsonResponse
     {
         $latestPosts = Post::withRelations()->latest()->limit(5)->get();
-
         $mostViewedPosts = Post::withRelations()->orderByDesc('views')->limit(5)->get();
 
         $categories = Category::select('id', 'name')
@@ -29,12 +28,12 @@ class PageController extends BaseController
         $postsByCategory = $categories->map(fn ($category) => [
             'id'    => $category->id,
             'name'  => $category->name,
-            'posts' => PostResource::collection($category->posts),
+            'posts' => PostResource::collection($category->posts)->resolve(),
         ]);
 
         return $this->sendData([
-            'latest_posts'      => PostResource::collection($latestPosts),
-            'most_viewed_posts' => PostResource::collection($mostViewedPosts),
+            'latest_posts'      => PostResource::collection($latestPosts)->resolve(),
+            'most_viewed_posts' => PostResource::collection($mostViewedPosts)->resolve(),
             'posts_by_category' => $postsByCategory,
         ], __('messages.blog_retrieved'));
     }
@@ -75,12 +74,13 @@ class PageController extends BaseController
             perPage: $validated['per_page'] ?? 15,
             page: $validated['page'] ?? 1
         );
-        $paginated = PostResource::collection($posts)->response()->getData(true);
+
+        $resource = PostResource::collection($posts)->response()->getData(true);
 
         return $this->sendData([
-            'posts' => $paginated['data'],
-            'meta'  => $paginated['meta'],
-            'links' => $paginated['links'],
+            'posts' => $resource['data'],
+            'meta'  => $resource['meta'],
+            'links' => $resource['links'],
         ], __('messages.posts_retrieved'));
     }
 }
