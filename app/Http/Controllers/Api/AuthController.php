@@ -16,34 +16,32 @@ class AuthController extends BaseController
      */
     public function login(LoginRequest $request): JsonResponse
     {
-        // Validate the request using the LoginRequest rules
         if (!Auth::attempt($request->only('email', 'password'))) {
-            // If authentication fails, return an error response
             return $this->sendError(__('auth.failed'));
         }
 
-        // Authentication passed, retrieve the user
         $user = Auth::user();
-        // If authentication is successful, generate a token
         $token = $user->createToken('API Token')->accessToken;
 
         return $this->sendData(['token' => $token], __('auth.success_login'));
     }
 
+    /**
+     * Handle user logout.
+     */
     public function logout(Request $request): JsonResponse
     {
-        // Revoke the token that was used to authenticate the current request
         $request->user()->token()->revoke();
 
         return $this->sendSuccess(__('auth.success_logout'));
     }
 
     /**
-     * Undocumented function.
+     * Retrieve authenticated user.
      */
     public function user(Request $request): JsonResponse
     {
-        $user = new UserResource($request->user());
+        $user = (new UserResource($request->user()))->resolve();
 
         return $this->sendData(['user' => $user], __('auth.user_retrieved'));
     }
