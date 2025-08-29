@@ -2,9 +2,7 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Foundation\Http\FormRequest;
-
-class MenuItemRequest extends FormRequest
+class MenuItemRequest extends BaseFormRequest
 {
     /**
      * Determine if the user is authorized to make this request.

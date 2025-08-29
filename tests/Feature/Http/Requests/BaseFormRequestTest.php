@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature;
+namespace Tests\Feature\Http\Requests;
 
 use App\Http\Requests\BaseFormRequest;
 use Illuminate\Foundation\Testing\RefreshDatabase;
