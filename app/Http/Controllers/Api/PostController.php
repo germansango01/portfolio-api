@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Requests\PostRequest;
+use App\Http\Requests\SearchRequest;
 use App\Http\Resources\PostResource;
 use App\Models\Category;
 use App\Models\Post;
@@ -43,7 +44,7 @@ class PostController extends BaseController
     /**
      * Search for posts with optional filters.
      */
-    public function search(PostRequest $request): JsonResponse
+    public function search(SearchRequest $request): JsonResponse
     {
         $validated = $request->validated();
 
