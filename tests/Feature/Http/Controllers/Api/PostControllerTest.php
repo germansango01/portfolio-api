@@ -1,0 +1,142 @@
+<?php
+
+namespace Tests\Feature\Http\Controllers\Api;
+
+use App\Models\Category;
+use App\Models\Post;
+use App\Models\Tag;
+use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Laravel\Passport\Passport;
+use Tests\TestCase;
+
+class PostControllerTest extends TestCase
+{
+    use RefreshDatabase;
+
+     protected function authenticate(): User
+    {
+        $user = User::factory()->create();
+        Passport::actingAs($user, [], 'api');
+
+        return $user;
+    }
+
+    public function test_resume_returns_blog_data()
+    {
+        $user = $this->authenticate();
+        Post::factory()->count(10)->for($user)->create();
+        Category::factory()->count(2)->create();
+
+        $response = $this->getJson(route('api.posts.resume'));
+
+        $response->assertOk()
+            ->assertJsonStructure([
+                'success',
+                'message',
+                'data' => [
+                    'latest_posts',
+                    'most_viewed_posts',
+                    'posts_by_category',
+                ],
+            ]);
+    }
+
+    public function test_search_returns_paginated_posts()
+    {
+        $user = $this->authenticate();
+        Post::factory()->count(20)->for($user)->create();
+
+        $response = $this->getJson(route('api.posts.search', ['q' => 'post']));
+
+        $response->assertOk()
+            ->assertJsonStructure([
+                'success',
+                'message',
+                'data' => [
+                    'posts',
+                    'meta',
+                    'links',
+                ],
+            ]);
+    }
+
+    public function test_posts_returns_paginated_posts()
+    {
+        $user = $this->authenticate();
+        Post::factory()->count(15)->for($user)->create();
+
+        $response = $this->getJson(route('api.posts.index'));
+
+        $response->assertOk()
+            ->assertJsonStructure([
+                'success',
+                'message',
+                'data' => [
+                    'posts',
+                    'meta',
+                    'links',
+                ],
+            ]);
+    }
+
+    public function test_posts_by_category_returns_posts()
+    {
+        $user = $this->authenticate();
+        $category = Category::factory()->create();
+        Post::factory()->count(5)->for($user)->for($category)->create();
+
+        $response = $this->getJson(route('api.posts.byCategory', $category->slug));
+
+        $response->assertOk()
+            ->assertJsonStructure([
+                'success',
+                'message',
+                'data' => [
+                    'posts',
+                    'meta',
+                    'links',
+                ],
+            ]);
+    }
+
+    public function test_posts_by_tag_returns_posts()
+    {
+        $user = $this->authenticate();
+        $tag = Tag::factory()->create();
+        $post = Post::factory()->for($user)->create();
+        $post->tags()->attach($tag);
+
+        $response = $this->getJson(route('api.posts.byTag', $tag->slug));
+
+        $response->assertOk()
+            ->assertJsonStructure([
+                'success',
+                'message',
+                'data' => [
+                    'posts',
+                    'meta',
+                    'links',
+                ],
+            ]);
+    }
+
+    public function test_posts_by_user_returns_posts()
+    {
+        $user = $this->authenticate();
+        Post::factory()->count(3)->for($user)->create();
+
+        $response = $this->getJson(route('api.posts.byUser', $user->id));
+
+        $response->assertOk()
+            ->assertJsonStructure([
+                'success',
+                'message',
+                'data' => [
+                    'posts',
+                    'meta',
+                    'links',
+                ],
+            ]);
+    }
+}

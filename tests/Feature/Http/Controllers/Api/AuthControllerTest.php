@@ -18,10 +18,10 @@ class AuthControllerTest extends TestCase
             'password' => bcrypt('password'),
         ]);
 
-        $response = $this->postJson('/api/login', [
+        $response = $this->postJson(route('api.login', [
             'email' => 'test@example.com',
             'password' => 'password',
-        ]);
+        ]));
 
         $response->assertStatus(200)
                  ->assertJsonStructure([
@@ -41,10 +41,10 @@ class AuthControllerTest extends TestCase
             'password' => bcrypt('password'),
         ]);
 
-        $response = $this->postJson('/api/login', [
+        $response = $this->postJson(route('api.login', [
             'email' => 'test@example.com',
             'password' => 'wrongpassword',
-        ]);
+        ]));
 
         $response->assertStatus(400)
                  ->assertJson([
@@ -56,7 +56,7 @@ class AuthControllerTest extends TestCase
     {
         Passport::actingAs(User::factory()->create());
 
-        $response = $this->postJson('/api/logout');
+        $response = $this->postJson(route('api.logout'));
 
         $response->assertStatus(200)
                  ->assertJson([
@@ -70,7 +70,7 @@ class AuthControllerTest extends TestCase
 
         Passport::actingAs($user);
 
-        $response = $this->getJson('/api/user');
+        $response = $this->getJson(route('api.user'));
 
         $response->assertStatus(200)
                  ->assertJson([
