@@ -2,7 +2,9 @@
     "$schema": "https://getcomposer.org/schema.json",
     "name": "laravel/laravel",
     "type": "project",
-    "description": "The skeleton application for the Laravel framework.",
+    "version": "0.0.2",
+    "title": "Portofolio REST API",
+    "description": "API RESTful para gestionar el contenido de un blog o portafolio",
     "keywords": ["laravel", "framework"],
     "license": "MIT",
     "require": {
