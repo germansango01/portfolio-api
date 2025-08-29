@@ -6,6 +6,8 @@ use App\Http\Requests\PostRequest;
 use App\Http\Resources\PostResource;
 use App\Models\Category;
 use App\Models\Post;
+use App\Models\Tag;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 
@@ -16,8 +18,8 @@ class PostController extends BaseController
      */
     public function resume(): JsonResponse
     {
-        $latestPosts = Post::withRelations()->latest()->limit(5)->get();
-        $mostViewedPosts = Post::withRelations()->orderByDesc('views')->limit(5)->get();
+        $latestPosts = Post::query()->withRelations()->latest()->limit(5)->get();
+        $mostViewedPosts = Post::query()->withRelations()->orderByDesc('views')->limit(5)->get();
 
         $categories = Category::select('id', 'name')
             ->with(['posts' => function ($query) {
@@ -39,23 +41,13 @@ class PostController extends BaseController
     }
 
     /**
-     * Retrieve paginated list of posts.
-     */
-    public function posts(PostRequest $request): JsonResponse
-    {
-        $query = Post::withRelations()->latest();
-
-        return $this->paginateAndRespond($query, $request->validated());
-    }
-
-    /**
      * Search for posts with optional filters.
      */
     public function search(PostRequest $request): JsonResponse
     {
         $validated = $request->validated();
 
-        $query = Post::withRelations()
+        $query = Post::query()->withRelations()
             ->searchTerm($validated['q'] ?? null)
             ->filterByCategory($validated['category'] ?? null)
             ->filterByAuthor($validated['author'] ?? null)
@@ -63,6 +55,50 @@ class PostController extends BaseController
             ->latest();
 
         return $this->paginateAndRespond($query, $validated);
+    }
+
+    /**
+     * Retrieve all posts with pagination.
+     */
+    public function posts(PostRequest $request): JsonResponse
+    {
+        $query = Post::query()->withRelations()->latest();
+
+        return $this->paginateAndRespond($query, $request->validated());
+    }
+
+    /**
+     * Retrieve posts by category with pagination.
+     */
+    public function postsByCategory(PostRequest $request, Category $category): JsonResponse
+    {
+        $query = Post::query()->withRelations()->where('category_id', $category->id)->latest();
+
+        return $this->paginateAndRespond($query, $request->validated());
+    }
+
+    /**
+     * Retrieve posts by tag with pagination.
+     */
+    public function postsByTag(PostRequest $request, Tag $tag): JsonResponse
+    {
+        $query = Post::query()->withRelations()
+            ->whereHas('tags', function (Builder $query) use ($tag) {
+                $query->where('tags.id', $tag->id);
+            })
+            ->latest();
+
+        return $this->paginateAndRespond($query, $request->validated());
+    }
+
+    /**
+     * Retrieve posts by user with pagination.
+     */
+    public function postsByUser(PostRequest $request, User $user): JsonResponse
+    {
+        $query = Post::query()->withRelations()->where('user_id', $user->id)->latest();
+
+        return $this->paginateAndRespond($query, $request->validated());
     }
 
     /**
@@ -75,12 +111,22 @@ class PostController extends BaseController
             page: $validated['page'] ?? 1
         );
 
-        $resource = PostResource::collection($posts)->response()->getData(true);
+        $transformed = PostResource::collection($posts)->resolve();
 
         return $this->sendData([
-            'posts' => $resource['data'],
-            'meta'  => $resource['meta'],
-            'links' => $resource['links'],
+            'posts' => $transformed,
+            'meta'  => [
+                'current_page' => $posts->currentPage(),
+                'last_page'    => $posts->lastPage(),
+                'per_page'     => $posts->perPage(),
+                'total'        => $posts->total(),
+            ],
+            'links' => [
+                'first' => $posts->url(1),
+                'last'  => $posts->url($posts->lastPage()),
+                'prev'  => $posts->previousPageUrl(),
+                'next'  => $posts->nextPageUrl(),
+            ],
         ], __('messages.posts_retrieved'));
     }
 }

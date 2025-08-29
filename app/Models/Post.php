@@ -49,7 +49,7 @@ class Post extends Model
      * Selecting only necessary columns improves performance.
      */
     #[Scope]
-    protected function withRelations(Builder $query): void
+    public function withRelations(Builder $query): void
     {
         $query->with(['user:id,name', 'category:id,name,slug', 'tags:id,name,slug']);
     }

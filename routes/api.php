@@ -18,7 +18,10 @@ Route::group(['middleware' => 'auth:api'], function () {
     /* Rutas de posts */
     Route::controller(PostController::class)->group(function () {
         Route::get('/resume', 'resume');
-        Route::get('/posts', 'posts');
         Route::get('/search', 'search');
+        Route::get('/posts', 'posts');
+        Route::get('/posts/category/{category:slug}', 'postsByCategory');
+        Route::get('/posts/tag/{tag:slug}', 'postsByTag');
+        Route::get('/posts/user/{user}', 'postsByUser');
     });
 });
