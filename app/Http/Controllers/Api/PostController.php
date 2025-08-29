@@ -14,7 +14,7 @@ class PostController extends BaseController
     /**
      * Retrieve blog data including latest posts, most viewed posts, and posts by category.
      */
-    public function blog(): JsonResponse
+    public function resume(): JsonResponse
     {
         $latestPosts = Post::withRelations()->latest()->limit(5)->get();
         $mostViewedPosts = Post::withRelations()->orderByDesc('views')->limit(5)->get();

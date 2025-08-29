@@ -15,9 +15,9 @@ Route::group(['middleware' => 'auth:api'], function () {
         Route::post('/logout', 'logout');
         Route::get('/user', 'user');
     });
-    /* Rutas de páginas */
+    /* Rutas de posts */
     Route::controller(PostController::class)->group(function () {
-        Route::get('/blog', 'blog');
+        Route::get('/resume', 'resume');
         Route::get('/posts', 'posts');
         Route::get('/search', 'search');
     });
