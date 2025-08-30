@@ -51,8 +51,12 @@ class BaseController extends Controller
     /**
      * Send a created response.
      */
-    public function sendCreated(string $message = 'Resource Created', int $code = Response::HTTP_CREATED): JsonResponse
+    public function sendCreated(string $message = '', int $code = Response::HTTP_CREATED): JsonResponse
     {
+        if (empty($message)) {
+            $message = __('messages.resource_created');
+        }
+
         return $this->sendSuccess($message, $code);
     }
 

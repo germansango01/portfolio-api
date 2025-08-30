@@ -35,4 +35,8 @@ return [
     'post_not_found'        => 'Post not found.',
     'blog_retrieved'        => 'Blog data retrieved successfully.',
     'posts_retrieved'       => 'Posts retrieved successfully.',
+    'category_not_found'    => 'Category not found.',
+    'tag_not_found'         => 'Tag not found.',
+    'user_not_found'        => 'User not found.',
+    'resource_created'      => 'Resource Created',
 ];

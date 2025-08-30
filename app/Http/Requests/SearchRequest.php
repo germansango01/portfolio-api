@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests;
 
-class PostRequest extends BaseFormRequest
+class SearchRequest extends BaseFormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -15,11 +15,15 @@ class PostRequest extends BaseFormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array|string>
+     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
         return [
+            'q'        => ['required', 'string', 'max:100'],
+            'category' => ['nullable', 'integer', 'exists:categories,id'],
+            'author'   => ['nullable', 'integer', 'exists:users,id'],
+            'tag'      => ['nullable', 'integer', 'exists:tags,id'],
             'page'     => ['nullable', 'integer', 'min:1'],
             'per_page' => ['nullable', 'integer', 'min:1', 'max:50'],
         ];
