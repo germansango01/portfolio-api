@@ -33,6 +33,17 @@ class BaseControllerTest extends TestCase
         ], $response->getData(true));
     }
 
+    public function test_send_data_without_message(): void
+    {
+        $response = $this->controller->sendData(['foo' => 'bar']);
+
+        $this->assertEquals([
+            'success' => true,
+            'message' => '',
+            'data' => ['foo' => 'bar'],
+        ], $response->getData(true));
+    }
+
     public function test_send_success(): void
     {
         $response = $this->controller->sendSuccess('Test message');
@@ -57,16 +68,29 @@ class BaseControllerTest extends TestCase
         ], $response->getData(true));
     }
 
-    public function test_send_created(): void
+    public function test_send_error_with_default_code(): void
     {
-        $response = $this->controller->sendCreated('Resource created');
+        $response = $this->controller->sendError('Default error');
 
-        $this->assertInstanceOf(JsonResponse::class, $response);
+        $this->assertEquals(Response::HTTP_BAD_REQUEST, $response->getStatusCode());
+    }
+
+    public function test_send_created_with_custom_message(): void
+    {
+        $response = $this->controller->sendCreated('Custom created message');
+
         $this->assertEquals(Response::HTTP_CREATED, $response->getStatusCode());
         $this->assertEquals([
             'success' => true,
-            'message' => 'Resource created',
+            'message' => 'Custom created message',
         ], $response->getData(true));
+    }
+
+    public function test_send_created_with_default_message(): void
+    {
+        $response = $this->controller->sendCreated();
+
+        $this->assertEquals(Response::HTTP_CREATED, $response->getStatusCode());
     }
 
     public function test_send_no_content(): void
