@@ -71,8 +71,14 @@ class PostController extends BaseController
     /**
      * Retrieve posts by category with pagination.
      */
-    public function postsByCategory(PostRequest $request, Category $category): JsonResponse
+    public function postsByCategory(PostRequest $request, string $categorySlug): JsonResponse
     {
+        $category = Category::where('slug', $categorySlug)->first();
+
+        if (!$category) {
+            return $this->sendError(__('messages.category_not_found'));
+        }
+
         $query = Post::query()->withRelations()->where('category_id', $category->id)->latest();
 
         return $this->paginateAndRespond($query, $request->validated());
@@ -81,8 +87,14 @@ class PostController extends BaseController
     /**
      * Retrieve posts by tag with pagination.
      */
-    public function postsByTag(PostRequest $request, Tag $tag): JsonResponse
+    public function postsByTag(PostRequest $request, string $tagSlug): JsonResponse
     {
+        $tag = Tag::where('slug', $tagSlug)->first();
+
+        if (!$tag) {
+            return $this->sendError(__('messages.tag_not_found'));
+        }
+
         $query = Post::query()->withRelations()
             ->whereHas('tags', function (Builder $query) use ($tag) {
                 $query->where('tags.id', $tag->id);
@@ -95,8 +107,14 @@ class PostController extends BaseController
     /**
      * Retrieve posts by user with pagination.
      */
-    public function postsByUser(PostRequest $request, User $user): JsonResponse
+    public function postsByUser(PostRequest $request, int $userId): JsonResponse
     {
+        $user = User::find($userId);
+
+        if (!$user) {
+            return $this->sendError(__('messages.user_not_found'));
+        }
+
         $query = Post::query()->withRelations()->where('user_id', $user->id)->latest();
 
         return $this->paginateAndRespond($query, $request->validated());

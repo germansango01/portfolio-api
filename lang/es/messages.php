@@ -35,4 +35,8 @@ return [
     'post_not_found'        => 'Publicación no encontrada.',
     'blog_retrieved'        => 'Datos del blog obtenidos con éxito.',
     'posts_retrieved'       => 'Publicaciones obtenidas con éxito.',
+    'category_not_found'    => 'Categoría no encontrada.',
+    'tag_not_found'         => 'Etiqueta no encontrada.',
+    'user_not_found'        => 'Usuario no encontrado.',
+    'resource_created'      => 'Recurso Creado',
 ];

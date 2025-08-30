@@ -9,4 +9,5 @@ return [
     'success_login'  => 'Inicio de sesión exitoso.',
     'success_logout' => 'Cierre de sesión exitoso.',
     'user_retrieved' => 'Usuario recuperado con éxito.',
+    'success_register' => 'Usuario registrado con éxito.',
 ];
