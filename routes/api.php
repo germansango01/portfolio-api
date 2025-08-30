@@ -24,6 +24,7 @@ Route::group(['middleware' => 'auth:api'], function () {
         Route::get('/posts/category/{category:slug}', 'postsByCategory')->name('api.posts.byCategory');
         Route::get('/posts/tag/{tag:slug}', 'postsByTag')->name('api.posts.byTag');
         Route::get('/posts/user/{user}', 'postsByUser')->name('api.posts.byUser');
+        Route::get('/posts/{slug}', 'show')->name('api.posts.show');
     });
     /* Rutas de menú */
     Route::controller(MenuController::class)->group(function () {

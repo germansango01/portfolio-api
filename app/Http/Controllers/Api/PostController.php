@@ -76,7 +76,7 @@ class PostController extends BaseController
         $category = Category::where('slug', $categorySlug)->first();
 
         if (!$category) {
-            return $this->sendError(__('messages.category_not_found'));
+            return $this->sendError(__('messages.category_not_found'), 404);
         }
 
         $query = Post::query()->withRelations()->where('category_id', $category->id)->latest();
@@ -92,7 +92,7 @@ class PostController extends BaseController
         $tag = Tag::where('slug', $tagSlug)->first();
 
         if (!$tag) {
-            return $this->sendError(__('messages.tag_not_found'));
+            return $this->sendError(__('messages.tag_not_found'), 404);
         }
 
         $query = Post::query()->withRelations()
@@ -112,12 +112,26 @@ class PostController extends BaseController
         $user = User::find($userId);
 
         if (!$user) {
-            return $this->sendError(__('messages.user_not_found'));
+            return $this->sendError(__('messages.user_not_found'), 404);
         }
 
         $query = Post::query()->withRelations()->where('user_id', $user->id)->latest();
 
         return $this->paginateAndRespond($query, $request->validated());
+    }
+
+    /**
+     * Retrieve a single post by slug.
+     */
+    public function show(string $slug): JsonResponse
+    {
+        $post = Post::query()->withRelations()->where('slug', $slug)->first();
+
+        if (!$post) {
+            return $this->sendError(__('messages.post_not_found'), 404);
+        }
+
+        return $this->sendData(PostResource::make($post)->resolve(), __('messages.post_retrieved'));
     }
 
     /**

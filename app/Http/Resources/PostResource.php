@@ -19,9 +19,11 @@ class PostResource extends JsonResource
             'id'             => $this->id,
             'title'          => $this->title,
             'slug'           => $this->slug,
+            'content'        => $this->content,
             'excerpt'        => Str::limit(strip_tags($this->content), 100),
             'image_url'      => $this->image_url ?? null,
             'created_at'     => $this->created_at->format('Y-m-d H:i'),
+            'updated_at'     => $this->updated_at->format('Y-m-d H:i'),
             'views'          => $this->views,
             // relaciones optimizadas
             'user' => $this->whenLoaded('user', fn () => [

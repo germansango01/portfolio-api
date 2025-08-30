@@ -139,4 +139,63 @@ class PostControllerTest extends TestCase
                 ],
             ]);
     }
+
+    public function test_show_returns_a_single_post()
+    {
+        $user = $this->authenticate();
+        $post = Post::factory()->for($user)->create();
+
+        $response = $this->getJson(route('api.posts.show', $post->slug));
+
+        $response->assertOk()
+            ->assertJsonStructure([
+                'success',
+                'message',
+                'data' => [
+                    'id',
+                    'title',
+                    'slug',
+                    'content',
+                    'views',
+                    'created_at',
+                    'updated_at',
+                ],
+            ]);
+    }
+
+    public function test_show_returns_not_found_for_invalid_post()
+    {
+        $this->authenticate();
+
+        $response = $this->getJson(route('api.posts.show', 'invalid-slug'));
+
+        $response->assertNotFound();
+    }
+
+    public function test_posts_by_category_returns_not_found_for_invalid_category()
+    {
+        $this->authenticate();
+
+        $response = $this->getJson(route('api.posts.byCategory', 'invalid-slug'));
+
+        $response->assertNotFound();
+    }
+
+    public function test_posts_by_tag_returns_not_found_for_invalid_tag()
+    {
+        $this->authenticate();
+
+        $response = $this->getJson(route('api.posts.byTag', 'invalid-slug'));
+
+        $response->assertNotFound();
+    }
+
+    public function test_posts_by_user_returns_not_found_for_invalid_user()
+    {
+        $this->authenticate();
+
+        $response = $this->getJson(route('api.posts.byUser', 999));
+
+        $response->assertNotFound();
+    }
 }
