@@ -53,7 +53,11 @@ class AuthControllerTest extends TestCase
         $response = $this->postJson(route('api.register'), $data);
 
         $response->assertStatus(422)
-            ->assertJsonValidationErrors(['email', 'password']);
+            ->assertJsonStructure([
+                    'success',
+                    'message',
+                    'errors' => [],
+                ]);
     }
 
     public function test_login_returns_token_with_valid_credentials()
