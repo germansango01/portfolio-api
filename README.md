@@ -109,8 +109,9 @@ Todas las rutas de posts (excepto `resume`) requieren autenticación.
 | Método | URI                                  | Nombre            | Descripción                                            |
 | :----- | :----------------------------------- | :---------------- | :----------------------------------------------------- |
 | `GET`  | `/api/resume`                        | `resume`          | Obtiene un resumen con los últimos posts y más vistos. |
-| `GET`  | `/api/posts`                         | `posts`           | Obtiene una lista paginada de todos los posts.         |
 | `GET`  | `/api/search`                        | `search`          | Busca posts por término, categoría, autor o tag.       |
+| `GET`  | `/api/posts`                         | `posts`           | Obtiene una lista paginada de todos los posts.         |
+| `GET`  | `/api/posts/{slug}`                  | `posts.show`      | Obtiene un post específico por su slug.                |
 | `GET`  | `/api/posts/category/{category:slug}`| `postsByCategory` | Obtiene los posts de una categoría específica.         |
 | `GET`  | `/api/posts/tag/{tag:slug}`          | `postsByTag`      | Obtiene los posts asociados a un tag específico.       |
 | `GET`  | `/api/posts/user/{user}`             | `postsByUser`     | Obtiene los posts de un usuario específico.            |
@@ -123,3 +124,9 @@ Todas las rutas de posts (excepto `resume`) requieren autenticación.
 -   `category` (int): ID de la categoría para filtrar en `/api/search`.
 -   `tag` (int): ID del tag para filtrar en `/api/search`.
 -   `author` (int): ID del autor para filtrar en `/api/search`.
+
+### Menú
+
+| Método | URI           | Nombre     | Descripción                                |
+| :----- | :------------ | :--------- | :----------------------------------------- |
+| `GET`  | `/api/menu`   | `menu.index` | Obtiene la estructura del menú principal.  |
