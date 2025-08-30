@@ -2,9 +2,7 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Foundation\Http\FormRequest;
-
-class MenuItemRequest extends FormRequest
+class MenuRequest extends BaseFormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,12 +20,20 @@ class MenuItemRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|unique:menu_items,name',
-            'title' => 'required|string',
-            'url' => 'required|url',
-            'parent_id' => 'nullable|exists:menu_items,id',
-            'position' => 'required|integer',
             'menu_id' => 'required|exists:menus,id',
+        ];
+    }
+
+    /**
+     * Get custom messages for validation errors.
+     *
+     * @return array<string, string>
+     */
+    public function messages(): array
+    {
+        return [
+            'menu_id.required' => __('menu.menu_id.required'),
+            'menu_id.exists' => __('menu.menu_id.exists'),
         ];
     }
 }

@@ -9,4 +9,5 @@ return [
     'success_login'  => 'Logged in successfully.',
     'success_logout' => 'Logged out successfully.',
     'user_retrieved' => 'User retrieved successfully.',
+    'success_register' => 'User registered successfully.',
 ];

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Requests\LoginRequest;
+use App\Http\Requests\RegisterRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
@@ -11,6 +12,25 @@ use Illuminate\Support\Facades\Auth;
 
 class AuthController extends BaseController
 {
+    /**
+     * Handle user registration.
+     */
+    public function register(RegisterRequest $request): JsonResponse
+    {
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => $request->password,
+        ]);
+
+        $token = $user->createToken('API Token')->accessToken;
+
+        return $this->sendData(
+            ['token' => $token, 'user' => (new UserResource($user))->resolve()],
+            __('auth.success_register')
+        );
+    }
+
     /**
      * Handle user login.
      */
