@@ -1,132 +1,152 @@
-# Blog REST API
+# Portfolio REST API
 
-API RESTful desarrollada con Laravel 12 y PHP 8.2 para gestionar el contenido de un blog o portafolio. Proporciona endpoints para la gestión de posts, categorías, tags y autenticación de usuarios mediante Laravel Passport.
+![PHP](https://img.shields.io/badge/php-8.2-blue.svg)
+![Laravel](https://img.shields.io/badge/laravel-12.x-blue.svg)
+![License](https://img.shields.io/badge/license-MIT-blue.svg)
 
-## Características
+API RESTful developed with Laravel 12 and PHP 8.3 to manage the content of a blog or portfolio. It provides endpoints for managing posts, categories, tags, and user authentication through Laravel Passport.
 
--   **Autenticación:** Sistema de registro y login basado en tokens con Laravel Passport.
--   **Gestión de Posts:** Endpoints para listar, buscar y filtrar posts.
--   **Taxonomía:** Filtrado de posts por categoría, tag y autor.
--   **Documentación de API:** Generada automáticamente con `l5-swagger`.
--   **Buenas Prácticas:** Estructura de proyecto organizada, siguiendo las convenciones de Laravel.
+## Features
+
+- **Authentication:** Token-based registration and login system with Laravel Passport.
+- **Post Management:** Endpoints for listing, searching, and filtering posts.
+- **Taxonomy:** Filtering of posts by category, tag, and author.
+- **API Documentation:** Automatically generated with `l5-swagger`.
+- **Best Practices:** Organized project structure, following Laravel conventions.
 
 ---
 
-## Instalación
+## Installation
 
-Sigue estos pasos para configurar el entorno de desarrollo local.
+Follow these steps to set up the local development environment.
 
-### Prerrequisitos
+### Prerequisites
 
--   PHP 8.2 o superior
--   Composer
--   Un servidor de base de datos (ej. MySQL, MariaDB)
--   Node.js y NPM (opcional, para el frontend)
+- PHP 8.2 or higher
+- Composer
+- A database server (e.g., MySQL, MariaDB)
+- Node.js and NPM (optional, for the frontend)
 
-### Pasos
+### Steps
 
-1.  **Clonar el repositorio**
+1. **Clone the repository**
 
-    ```bash
-    git clone <tu-repositorio-git> portfolio-api
-    cd portfolio-api
-    ```
+   ```bash
+   git clone <your-git-repository> portfolio-api
+   cd portfolio-api
+   ```
 
-2.  **Instalar dependencias**
+2. **Install dependencies**
 
-    ```bash
-    composer install
-    npm install
-    ```
+   ```bash
+   composer install
+   npm install
+   ```
 
-3.  **Configurar el entorno**
-    Copia el archivo de ejemplo `.env.example` y configúralo según tus necesidades.
+3. **Configure the environment**
+   Copy the example `.env.example` file and configure it according to your needs.
 
-    ```bash
-    copy .env.example .env
-    ```
+   ```bash
+   copy .env.example .env
+   ```
 
-    Genera la clave de la aplicación:
+   Generate the application key:
 
-    ```bash
-    php artisan key:generate
-    ```
+   ```bash
+   php artisan key:generate
+   ```
 
-    Asegúrate de configurar correctamente la conexión a la base de datos (`DB_*`) y la URL de la aplicación (`APP_URL`) en tu archivo `.env`.
+   Make sure to correctly configure the database connection (`DB_*`) and the application URL (`APP_URL`) in your `.env` file.
 
-4.  **Instalar Laravel Passport**
-    Este comando creará las claves de encriptación necesarias para generar los tokens de acceso.
+4. **Install Laravel Passport**
+   This command will create the necessary encryption keys to generate access tokens.
 
-    ```bash
-    php artisan passport:install
-    ```
+   ```bash
+   php artisan passport:install
+   ```
 
-5.  **Ejecutar las migraciones y seeders**
-    Esto creará la estructura de la base de datos y la llenará con datos de ejemplo.
+5. **Run migrations and seeders**
+   This will create the database structure and fill it with sample data.
 
-    ```bash
-    php artisan migrate --seed
-    ```
+   ```bash
+   php artisan migrate --seed
+   ```
 
-6.  **Crear el enlace simbólico de almacenamiento**
+6. **Create the storage symbolic link**
 
-    ```bash
-    php artisan storage:link
-    ```
+   ```bash
+   php artisan storage:link
+   ```
 
-7.  **Iniciar el servidor**
-    Puedes usar el servidor de desarrollo de Artisan:
-    ```bash
-    php artisan serve
-    ```
-    La API estará disponible en `http://127.0.0.1:8000`.
+7. **Start the server**
+   You can use the Artisan development server:
+   ```bash
+   php artisan serve
+   ```
+   The API will be available at `http://127.0.0.1:8000`.
+
+---
+
+## Running Tests
+
+To run the test suite, use the following command:
+
+```bash
+php artisan test
+```
 
 ---
 
 ## API Endpoints
 
-A continuación se detallan los endpoints disponibles en la API.
+The available API endpoints are detailed below.
 
-### Documentación Interactiva
+### Interactive Documentation
 
-Para una documentación completa y actualizada, puedes visitar la ruta generada por Swagger una vez que el servidor esté en funcionamiento:
+For complete and up-to-date documentation, you can visit the route generated by Swagger once the server is running:
 
--   **URL:** [`/api/documentation`](/api/documentation)
+- **URL:** [`/api/documentation`](/api/documentation)
 
-### Autenticación
+### Authentication
 
-| Método | URI              | Nombre     | Descripción                            |
-| :----- | :--------------- | :--------- | :------------------------------------- |
-| `POST` | `/api/register`  | `register` | Registra un nuevo usuario.             |
-| `POST` | `/api/login`     | `login`    | Inicia sesión y obtiene un token.      |
-| `POST` | `/api/logout`    | `logout`   | Cierra la sesión del usuario (Requiere Auth). |
-| `GET`  | `/api/user`      | `user`     | Obtiene la información del usuario autenticado. |
+| Method | URI | Name | Description |
+| :--- | :--- | :--- | :--- |
+| `POST` | `/api/register` | `register` | Registers a new user. |
+| `POST` | `/api/login` | `login` | Logs in and obtains a token. |
+| `POST` | `/api/logout` | `logout` | Logs out the user (Requires Auth). |
+| `GET` | `/api/user` | `user` | Gets the authenticated user's information. |
 
 ### Posts
 
-Todas las rutas de posts (excepto `resume`) requieren autenticación.
+All post routes (except `resume`) require authentication.
 
-| Método | URI                                  | Nombre            | Descripción                                            |
-| :----- | :----------------------------------- | :---------------- | :----------------------------------------------------- |
-| `GET`  | `/api/resume`                        | `resume`          | Obtiene un resumen con los últimos posts y más vistos. |
-| `GET`  | `/api/search`                        | `search`          | Busca posts por término, categoría, autor o tag.       |
-| `GET`  | `/api/posts`                         | `posts`           | Obtiene una lista paginada de todos los posts.         |
-| `GET`  | `/api/posts/{slug}`                  | `posts.show`      | Obtiene un post específico por su slug.                |
-| `GET`  | `/api/posts/category/{category:slug}`| `postsByCategory` | Obtiene los posts de una categoría específica.         |
-| `GET`  | `/api/posts/tag/{tag:slug}`          | `postsByTag`      | Obtiene los posts asociados a un tag específico.       |
-| `GET`  | `/api/posts/user/{user}`             | `postsByUser`     | Obtiene los posts de un usuario específico.            |
+| Method | URI | Name | Description |
+| :--- | :--- | :--- | :--- |
+| `GET` | `/api/resume` | `resume` | Gets a summary with the latest and most viewed posts. |
+| `GET` | `/api/search` | `search` | Searches for posts by term, category, author, or tag. |
+| `GET` | `/api/posts` | `posts` | Gets a paginated list of all posts. |
+| `GET` | `/api/posts/{slug}` | `posts.show` | Gets a specific post by its slug. |
+| `GET` | `/api/posts/category/{category:slug}`| `postsByCategory` | Gets the posts of a specific category. |
+| `GET` | `/api/posts/tag/{tag:slug}` | `postsByTag` | Gets the posts associated with a specific tag. |
+| `GET` | `/api/posts/user/{user}` | `postsByUser` | Gets the posts of a specific user. |
 
-**Parámetros de paginación y búsqueda (Query Params):**
+**Pagination and Search Parameters (Query Params):**
 
--   `page` (int): Número de página a obtener.
--   `per_page` (int): Número de resultados por página.
--   `q` (string): Término de búsqueda para el endpoint `/api/search`.
--   `category` (int): ID de la categoría para filtrar en `/api/search`.
--   `tag` (int): ID del tag para filtrar en `/api/search`.
--   `author` (int): ID del autor para filtrar en `/api/search`.
+- `page` (int): Page number to retrieve.
+- `per_page` (int): Number of results per page.
+- `q` (string): Search term for the `/api/search` endpoint.
+- `category` (int): ID of the category to filter in `/api/search`.
+- `tag` (int): ID of the tag to filter in `/api/search`.
+- `author` (int): ID of the author to filter in `/api/search`.
 
-### Menú
+### Menu
 
-| Método | URI           | Nombre     | Descripción                                |
-| :----- | :------------ | :--------- | :----------------------------------------- |
-| `GET`  | `/api/menu`   | `menu.index` | Obtiene la estructura del menú principal.  |
+| Method | URI | Name | Description |
+| :--- | :--- | :--- | :--- |
+| `GET` | `/api/menu/{menu:id}` | `menu.index` | Gets the structure of the main menu. |
+
+---
+
+## License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more details.

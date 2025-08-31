@@ -2,7 +2,7 @@
     "$schema": "https://getcomposer.org/schema.json",
     "name": "laravel/laravel",
     "type": "project",
-    "version": "0.0.3",
+    "version": "1.0.0",
     "title": "Portofolio REST API",
     "description": "API RESTful para gestionar el contenido de un blog o portafolio",
     "keywords": ["laravel", "framework"],
