@@ -21,6 +21,7 @@ class MenuItemResource extends JsonResource
             'url' => $this->url,
             'position' => $this->position,
             'menu_id' => $this->menu_id,
+            'parent_id' => $this->parent_id,
             'children' => $this->whenLoaded('children', function () { return self::collection($this->children); }),
         ];
     }

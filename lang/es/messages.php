@@ -39,4 +39,7 @@ return [
     'tag_not_found'         => 'Etiqueta no encontrada.',
     'user_not_found'        => 'Usuario no encontrado.',
     'resource_created'      => 'Recurso Creado',
+    'resource_updated'      => 'Recurso Actualizado',
+    'resource_deleted'      => 'Recurso Eliminado',
+    'menu_not_found'        => 'Menú no encontrado.',
 ];
