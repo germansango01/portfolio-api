@@ -28,6 +28,6 @@ Route::group(['middleware' => 'auth:api'], function () {
     });
     /* Rutas de menú */
     Route::controller(MenuController::class)->group(function () {
-        Route::get('/menu', 'index')->name('api.menu.index');
+        Route::get('/menu/{menu:id}', 'index')->name('api.menu.index');
     });
 });

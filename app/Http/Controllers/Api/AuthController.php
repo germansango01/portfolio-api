@@ -13,7 +13,23 @@ use Illuminate\Support\Facades\Auth;
 class AuthController extends BaseController
 {
     /**
-     * Handle user registration.
+     * @OA\Post(
+     *     path="/api/register",
+     *     summary="Register a new user",
+     *     tags={"Auth"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(ref="#/components/schemas/RegisterRequest")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="User registered successfully."
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation error."
+     *     )
+     * )
      */
     public function register(RegisterRequest $request): JsonResponse
     {
@@ -32,7 +48,23 @@ class AuthController extends BaseController
     }
 
     /**
-     * Handle user login.
+     * @OA\Post(
+     *     path="/api/login",
+     *     summary="Login a user",
+     *     tags={"Auth"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(ref="#/components/schemas/LoginRequest")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="User logged in successfully."
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized."
+     *     )
+     * )
      */
     public function login(LoginRequest $request): JsonResponse
     {
@@ -47,7 +79,16 @@ class AuthController extends BaseController
     }
 
     /**
-     * Handle user logout.
+     * @OA\Post(
+     *     path="/api/logout",
+     *     summary="Logout a user",
+     *     tags={"Auth"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="User logged out successfully."
+     *     )
+     * )
      */
     public function logout(Request $request): JsonResponse
     {
@@ -57,7 +98,23 @@ class AuthController extends BaseController
     }
 
     /**
-     * Retrieve authenticated user.
+     * @OA\Get(
+     *     path="/api/user",
+     *     summary="Get authenticated user",
+     *     tags={"Auth"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="User retrieved successfully.",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="User retrieved successfully."),
+     *             @OA\Property(property="data", type="object",
+     *                 @OA\Property(property="user", ref="#/components/schemas/User")
+     *             )
+     *         )
+     *     )
+     * )
      */
     public function user(Request $request): JsonResponse
     {

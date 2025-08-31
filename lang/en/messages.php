@@ -39,4 +39,7 @@ return [
     'tag_not_found'         => 'Tag not found.',
     'user_not_found'        => 'User not found.',
     'resource_created'      => 'Resource Created',
+    'resource_updated'      => 'Resource Updated',
+    'resource_deleted'      => 'Resource Deleted',
+    'menu_not_found'        => 'Menu not found.',
 ];

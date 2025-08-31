@@ -27,44 +27,29 @@ class MenuControllerTest extends TestCase
         $menu = Menu::factory()->create();
         MenuItem::factory()->count(3)->create(['menu_id' => $menu->id]);
 
-        $response = $this->getJson(route('api.menu.index', ['menu_id' => $menu->id]));
+        $response = $this->getJson(route('api.menu.index', $menu->id));
 
         $response->assertOk()
             ->assertJsonStructure([
                 'success',
                 'message',
                 'data' => [
-                    'items'
+                    'items',
                 ],
             ])
             ->assertJsonCount(3, 'data.items');
-    }
-
-    public function test_index_returns_error_when_menu_id_is_missing()
-    {
-        $this->authenticate();
-
-        $response = $this->getJson(route('api.menu.index'));
-
-        $response->assertStatus(422)
-            ->assertJsonStructure([
-                    'success',
-                    'message',
-                    'errors' => [],
-                ]);
     }
 
     public function test_index_returns_error_when_menu_id_does_not_exist()
     {
         $this->authenticate();
 
-        $response = $this->getJson(route('api.menu.index', ['menu_id' => 999]));
+        $response = $this->getJson(route('api.menu.index', 999));
 
-        $response->assertStatus(422)
+        $response->assertStatus(404)
             ->assertJsonStructure([
                     'success',
                     'message',
-                    'errors' => [],
                 ]);
     }
 }
