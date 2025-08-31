@@ -2,6 +2,15 @@
 
 namespace App\Http\Requests;
 
+/**
+ * @OA\Schema(
+ *     schema="LoginRequest",
+ *     type="object",
+ *     required={"email", "password"},
+ *     @OA\Property(property="email", type="string", format="email", example="johndoe@example.com"),
+ *     @OA\Property(property="password", type="string", format="password", example="password")
+ * )
+ */
 class LoginRequest extends BaseFormRequest
 {
     /**

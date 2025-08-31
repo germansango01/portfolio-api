@@ -2,6 +2,50 @@
 
 namespace App\Http\Requests;
 
+/**
+ * @OA\Schema(
+ *     schema="SearchRequest",
+ *     title="Search Request",
+ *     description="Search request body",
+ *     required={"q"},
+ *     @OA\Property(
+ *         property="q",
+ *         type="string",
+ *         description="Search query",
+ *         example="laravel"
+ *     ),
+ *     @OA\Property(
+ *         property="category",
+ *         type="integer",
+ *         description="Category ID",
+ *         example=1
+ *     ),
+ *     @OA\Property(
+ *         property="author",
+ *         type="integer",
+ *         description="Author ID",
+ *         example=1
+ *     ),
+ *     @OA\Property(
+ *         property="tag",
+ *         type="integer",
+ *         description="Tag ID",
+ *         example=1
+ *     ),
+ *     @OA\Property(
+ *         property="page",
+ *         type="integer",
+ *         description="Page number",
+ *         example=1
+ *     ),
+ *     @OA\Property(
+ *         property="per_page",
+ *         type="integer",
+ *         description="Items per page",
+ *         example=10
+ *     )
+ * )
+ */
 class SearchRequest extends BaseFormRequest
 {
     /**

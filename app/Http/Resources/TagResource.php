@@ -7,9 +7,9 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
  * @OA\Schema(
- *     schema="Menu",
- *     title="Menu",
- *     description="Menu resource",
+ *     schema="Tag",
+ *     title="Tag",
+ *     description="Tag resource",
  *     @OA\Property(
  *         property="id",
  *         type="integer",
@@ -20,11 +20,17 @@ use Illuminate\Http\Resources\Json\JsonResource;
  *         property="name",
  *         type="string",
  *         description="Name",
- *         example="Main Menu"
+ *         example="PHP"
+ *     ),
+ *     @OA\Property(
+ *         property="slug",
+ *         type="string",
+ *         description="Slug",
+ *         example="php"
  *     )
  * )
  */
-class MenuResource extends JsonResource
+class TagResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -36,6 +42,7 @@ class MenuResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
+            'slug' => $this->slug,
         ];
     }
 }

@@ -1,0 +1,604 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Portfolio API",
+        "description": "API for the portfolio",
+        "contact": {
+            "name": "Support Team",
+            "email": "support@example.com"
+        },
+        "version": "1.0.0"
+    },
+    "paths": {
+        "/api/register": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Register a new user",
+                "operationId": "8e4e3cb7b46126f4696379d3c7eeb4ad",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RegisterRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "User registered successfully."
+                    },
+                    "422": {
+                        "description": "Validation error."
+                    }
+                }
+            }
+        },
+        "/api/login": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Login a user",
+                "operationId": "222b2625838e3c57e017987f73598fda",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/LoginRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "User logged in successfully."
+                    },
+                    "401": {
+                        "description": "Unauthorized."
+                    }
+                }
+            }
+        },
+        "/api/logout": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Logout a user",
+                "operationId": "ad65cbbd4e9f201619eae184a5961a98",
+                "responses": {
+                    "200": {
+                        "description": "User logged out successfully."
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/user": {
+            "get": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Get authenticated user",
+                "operationId": "961ad57987905b44ae2e2f40b82e76de",
+                "responses": {
+                    "200": {
+                        "description": "User retrieved successfully.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "User retrieved successfully."
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "user": {
+                                                    "$ref": "#/components/schemas/User"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/menus/{menuId}": {
+            "get": {
+                "tags": [
+                    "Menus"
+                ],
+                "summary": "Retrieve menu items by menu ID",
+                "operationId": "a39c3ec15a9ccd48e284f06f2786b227",
+                "parameters": [
+                    {
+                        "name": "menuId",
+                        "in": "path",
+                        "description": "ID of the menu",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Menu items retrieved successfully."
+                    },
+                    "404": {
+                        "description": "Menu not found."
+                    }
+                }
+            }
+        },
+        "/api/resume": {
+            "get": {
+                "tags": [
+                    "Blog"
+                ],
+                "summary": "Retrieve blog data",
+                "operationId": "6d8f2ea7eebbcb6b8e0630c565489e96",
+                "responses": {
+                    "200": {
+                        "description": "Blog data retrieved successfully."
+                    }
+                }
+            }
+        },
+        "/api/search": {
+            "get": {
+                "tags": [
+                    "Blog"
+                ],
+                "summary": "Search for posts",
+                "operationId": "ea5f4013a44267ae781c4f5e719cb8a6",
+                "responses": {
+                    "200": {
+                        "description": "Posts retrieved successfully."
+                    }
+                }
+            }
+        },
+        "/api/posts": {
+            "get": {
+                "tags": [
+                    "Blog"
+                ],
+                "summary": "Retrieve all posts",
+                "operationId": "734acf8a63f3e99d2b1d618926fc1c1c",
+                "responses": {
+                    "200": {
+                        "description": "Posts retrieved successfully."
+                    }
+                }
+            }
+        },
+        "/api/posts/category/{categorySlug}": {
+            "get": {
+                "tags": [
+                    "Blog"
+                ],
+                "summary": "Retrieve posts by category",
+                "operationId": "6471a10cfe8e338f28b805d57f867ce3",
+                "responses": {
+                    "200": {
+                        "description": "Posts retrieved successfully."
+                    }
+                }
+            }
+        },
+        "/api/posts/tag/{tagSlug}": {
+            "get": {
+                "tags": [
+                    "Blog"
+                ],
+                "summary": "Retrieve posts by tag",
+                "operationId": "7f0ccf7b8255cb036e3587c05d728954",
+                "responses": {
+                    "200": {
+                        "description": "Posts retrieved successfully."
+                    }
+                }
+            }
+        },
+        "/api/posts/user/{userId}": {
+            "get": {
+                "tags": [
+                    "Blog"
+                ],
+                "summary": "Retrieve posts by user",
+                "operationId": "fb965d3b6b5e705394d61fb155e0a3f7",
+                "responses": {
+                    "200": {
+                        "description": "Posts retrieved successfully."
+                    }
+                }
+            }
+        },
+        "/api/posts/{slug}": {
+            "get": {
+                "tags": [
+                    "Blog"
+                ],
+                "summary": "Retrieve a single post",
+                "operationId": "91c778429c5f08601778dc529a4d3c98",
+                "parameters": [
+                    {
+                        "name": "slug",
+                        "in": "path",
+                        "description": "Post slug",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Post retrieved successfully."
+                    },
+                    "404": {
+                        "description": "Post not found."
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "LoginRequest": {
+                "required": [
+                    "email",
+                    "password"
+                ],
+                "properties": {
+                    "email": {
+                        "type": "string",
+                        "format": "email",
+                        "example": "johndoe@example.com"
+                    },
+                    "password": {
+                        "type": "string",
+                        "format": "password",
+                        "example": "password"
+                    }
+                },
+                "type": "object"
+            },
+            "PostRequest": {
+                "title": "Post Request",
+                "description": "Post request body",
+                "properties": {
+                    "page": {
+                        "description": "Page number",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "per_page": {
+                        "description": "Items per page",
+                        "type": "integer",
+                        "example": 10
+                    }
+                },
+                "type": "object"
+            },
+            "RegisterRequest": {
+                "required": [
+                    "name",
+                    "email",
+                    "password",
+                    "password_confirmation"
+                ],
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "example": "John Doe"
+                    },
+                    "email": {
+                        "type": "string",
+                        "format": "email",
+                        "example": "johndoe@example.com"
+                    },
+                    "password": {
+                        "type": "string",
+                        "format": "password",
+                        "example": "password"
+                    },
+                    "password_confirmation": {
+                        "type": "string",
+                        "format": "password",
+                        "example": "password"
+                    }
+                },
+                "type": "object"
+            },
+            "SearchRequest": {
+                "title": "Search Request",
+                "description": "Search request body",
+                "required": [
+                    "q"
+                ],
+                "properties": {
+                    "q": {
+                        "description": "Search query",
+                        "type": "string",
+                        "example": "laravel"
+                    },
+                    "category": {
+                        "description": "Category ID",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "author": {
+                        "description": "Author ID",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "tag": {
+                        "description": "Tag ID",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "page": {
+                        "description": "Page number",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "per_page": {
+                        "description": "Items per page",
+                        "type": "integer",
+                        "example": 10
+                    }
+                },
+                "type": "object"
+            },
+            "Category": {
+                "title": "Category",
+                "description": "Category resource",
+                "properties": {
+                    "id": {
+                        "description": "ID",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "name": {
+                        "description": "Name",
+                        "type": "string",
+                        "example": "Laravel"
+                    },
+                    "slug": {
+                        "description": "Slug",
+                        "type": "string",
+                        "example": "laravel"
+                    }
+                },
+                "type": "object"
+            },
+            "MenuItem": {
+                "title": "Menu Item",
+                "description": "Menu item resource",
+                "properties": {
+                    "id": {
+                        "description": "ID",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "name": {
+                        "description": "Name",
+                        "type": "string",
+                        "example": "Home"
+                    },
+                    "title": {
+                        "description": "Title",
+                        "type": "string",
+                        "example": "Home"
+                    },
+                    "url": {
+                        "description": "URL",
+                        "type": "string",
+                        "example": "/"
+                    },
+                    "position": {
+                        "description": "Position",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "menu_id": {
+                        "description": "Menu ID",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "parent_id": {
+                        "description": "Parent ID",
+                        "type": "integer",
+                        "example": null
+                    },
+                    "children": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/MenuItem"
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "Menu": {
+                "title": "Menu",
+                "description": "Menu resource",
+                "properties": {
+                    "id": {
+                        "description": "ID",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "name": {
+                        "description": "Name",
+                        "type": "string",
+                        "example": "Main Menu"
+                    }
+                },
+                "type": "object"
+            },
+            "Post": {
+                "title": "Post",
+                "description": "Post resource",
+                "properties": {
+                    "id": {
+                        "description": "ID",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "title": {
+                        "description": "Title",
+                        "type": "string",
+                        "example": "My first post"
+                    },
+                    "slug": {
+                        "description": "Slug",
+                        "type": "string",
+                        "example": "my-first-post"
+                    },
+                    "content": {
+                        "description": "Content",
+                        "type": "string",
+                        "example": "<p>This is my first post.</p>"
+                    },
+                    "excerpt": {
+                        "description": "Excerpt",
+                        "type": "string",
+                        "example": "This is my first post."
+                    },
+                    "image_url": {
+                        "description": "Image URL",
+                        "type": "string",
+                        "example": "http://example.com/image.jpg"
+                    },
+                    "created_at": {
+                        "description": "Created at",
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2025-08-26 12:00:00"
+                    },
+                    "updated_at": {
+                        "description": "Updated at",
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2025-08-26 12:00:00"
+                    },
+                    "views": {
+                        "description": "Views",
+                        "type": "integer",
+                        "example": 100
+                    },
+                    "user": {
+                        "$ref": "#/components/schemas/User"
+                    },
+                    "category": {
+                        "$ref": "#/components/schemas/Category"
+                    },
+                    "tags": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Tag"
+                        }
+                    },
+                    "comments_count": {
+                        "description": "Comments count",
+                        "type": "integer",
+                        "example": 10
+                    }
+                },
+                "type": "object"
+            },
+            "Tag": {
+                "title": "Tag",
+                "description": "Tag resource",
+                "properties": {
+                    "id": {
+                        "description": "ID",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "name": {
+                        "description": "Name",
+                        "type": "string",
+                        "example": "PHP"
+                    },
+                    "slug": {
+                        "description": "Slug",
+                        "type": "string",
+                        "example": "php"
+                    }
+                },
+                "type": "object"
+            },
+            "User": {
+                "title": "User",
+                "description": "User resource",
+                "properties": {
+                    "id": {
+                        "description": "ID",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "name": {
+                        "description": "Name",
+                        "type": "string",
+                        "example": "John Doe"
+                    },
+                    "email": {
+                        "description": "Email",
+                        "type": "string",
+                        "format": "email",
+                        "example": "jhon.doe@example.com"
+                    }
+                },
+                "type": "object"
+            }
+        },
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "scheme": "bearer"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Auth",
+            "description": "Auth"
+        },
+        {
+            "name": "Menus",
+            "description": "Menus"
+        },
+        {
+            "name": "Blog",
+            "description": "Blog"
+        }
+    ]
+}

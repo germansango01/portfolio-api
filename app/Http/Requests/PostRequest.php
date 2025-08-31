@@ -2,6 +2,25 @@
 
 namespace App\Http\Requests;
 
+/**
+ * @OA\Schema(
+ *     schema="PostRequest",
+ *     title="Post Request",
+ *     description="Post request body",
+ *     @OA\Property(
+ *         property="page",
+ *         type="integer",
+ *         description="Page number",
+ *         example=1
+ *     ),
+ *     @OA\Property(
+ *         property="per_page",
+ *         type="integer",
+ *         description="Items per page",
+ *         example=10
+ *     )
+ * )
+ */
 class PostRequest extends BaseFormRequest
 {
     /**
