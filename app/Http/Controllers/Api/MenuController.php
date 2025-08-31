@@ -12,7 +12,26 @@ use Illuminate\Http\Request;
 class MenuController extends BaseController
 {
     /**
-     * Retrieve menu items by menu ID.
+     * @OA\Get(
+     *     path="/api/menus/{menuId}",
+     *     summary="Retrieve menu items by menu ID",
+     *     tags={"Menus"},
+     *     @OA\Parameter(
+     *         name="menuId",
+     *         in="path",
+     *         required=true,
+     *         description="ID of the menu",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Menu items retrieved successfully."
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Menu not found."
+     *     )
+     * )
      */
     public function index(Request $request, int $menuId): JsonResponse
     {

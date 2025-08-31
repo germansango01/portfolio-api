@@ -15,7 +15,15 @@ use Illuminate\Http\JsonResponse;
 class PostController extends BaseController
 {
     /**
-     * Retrieve blog data including latest posts, most viewed posts, and posts by category.
+     * @OA\Get(
+     *     path="/api/resume",
+     *     summary="Retrieve blog data",
+     *     tags={"Blog"},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Blog data retrieved successfully."
+     *     )
+     * )
      */
     public function resume(): JsonResponse
     {
@@ -42,7 +50,15 @@ class PostController extends BaseController
     }
 
     /**
-     * Search for posts with optional filters.
+     * @OA\Get(
+     *     path="/api/search",
+     *     summary="Search for posts",
+     *     tags={"Blog"},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Posts retrieved successfully."
+     *     )
+     * )
      */
     public function search(SearchRequest $request): JsonResponse
     {
@@ -59,7 +75,15 @@ class PostController extends BaseController
     }
 
     /**
-     * Retrieve all posts with pagination.
+     * @OA\Get(
+     *     path="/api/posts",
+     *     summary="Retrieve all posts",
+     *     tags={"Blog"},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Posts retrieved successfully."
+     *     )
+     * )
      */
     public function posts(PostRequest $request): JsonResponse
     {
@@ -69,7 +93,15 @@ class PostController extends BaseController
     }
 
     /**
-     * Retrieve posts by category with pagination.
+     * @OA\Get(
+     *     path="/api/posts/category/{categorySlug}",
+     *     summary="Retrieve posts by category",
+     *     tags={"Blog"},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Posts retrieved successfully."
+     *     )
+     * )
      */
     public function postsByCategory(PostRequest $request, string $categorySlug): JsonResponse
     {
@@ -85,7 +117,15 @@ class PostController extends BaseController
     }
 
     /**
-     * Retrieve posts by tag with pagination.
+     * @OA\Get(
+     *     path="/api/posts/tag/{tagSlug}",
+     *     summary="Retrieve posts by tag",
+     *     tags={"Blog"},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Posts retrieved successfully."
+     *     )
+     * )
      */
     public function postsByTag(PostRequest $request, string $tagSlug): JsonResponse
     {
@@ -105,7 +145,15 @@ class PostController extends BaseController
     }
 
     /**
-     * Retrieve posts by user with pagination.
+     * @OA\Get(
+     *     path="/api/posts/user/{userId}",
+     *     summary="Retrieve posts by user",
+     *     tags={"Blog"},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Posts retrieved successfully."
+     *     )
+     * )
      */
     public function postsByUser(PostRequest $request, int $userId): JsonResponse
     {
@@ -121,7 +169,26 @@ class PostController extends BaseController
     }
 
     /**
-     * Retrieve a single post by slug.
+     * @OA\Get(
+     *     path="/api/posts/{slug}",
+     *     summary="Retrieve a single post",
+     *     tags={"Blog"},
+     *     @OA\Parameter(
+     *         name="slug",
+     *         in="path",
+     *         required=true,
+     *         description="Post slug",
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Post retrieved successfully."
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Post not found."
+     *     )
+     * )
      */
     public function show(string $slug): JsonResponse
     {
