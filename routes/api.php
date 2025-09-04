@@ -16,18 +16,18 @@ Route::group(['middleware' => 'auth:api'], function () {
         Route::post('/logout', 'logout')->name('api.logout');
         Route::get('/user', 'user')->name('api.user');
     });
+
     /* Rutas de posts */
     Route::controller(PostController::class)->group(function () {
-        Route::get('/resume', 'resume')->name('api.posts.resume');
-        Route::get('/search', 'search')->name('api.posts.search');
-        Route::get('/posts', 'posts')->name('api.posts.index');
+        Route::get('/posts/summary', 'summary')->name('api.posts.summary');
+        Route::get('/posts/search', 'search')->name('api.posts.search');
         Route::get('/posts/category/{category:slug}', 'postsByCategory')->name('api.posts.byCategory');
         Route::get('/posts/tag/{tag:slug}', 'postsByTag')->name('api.posts.byTag');
         Route::get('/posts/user/{user}', 'postsByUser')->name('api.posts.byUser');
         Route::get('/posts/{slug}', 'show')->name('api.posts.show');
+        Route::get('/posts', 'index')->name('api.posts.index');
     });
+
     /* Rutas de menú */
-    Route::controller(MenuController::class)->group(function () {
-        Route::get('/menu/{menu:id}', 'index')->name('api.menu.index');
-    });
+    Route::get('/menu/{menu:id}', [MenuController::class, 'index'])->name('api.menu.index');
 });

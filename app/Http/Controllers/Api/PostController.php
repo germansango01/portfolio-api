@@ -16,16 +16,34 @@ class PostController extends BaseController
 {
     /**
      * @OA\Get(
-     *     path="/api/resume",
-     *     summary="Retrieve blog data",
+     *     path="/api/posts",
+     *     summary="Retrieve all posts",
      *     tags={"Blog"},
      *     @OA\Response(
      *         response=200,
-     *         description="Blog data retrieved successfully."
+     *         description="Posts retrieved successfully."
      *     )
      * )
      */
-    public function resume(): JsonResponse
+    public function index(PostRequest $request): JsonResponse
+    {
+        $query = Post::query()->withRelations()->latest();
+
+        return $this->paginateAndRespond($query, $request->validated());
+    }
+
+    /**
+     * @OA\Get(
+     *     path="/api/posts/summary",
+     *     summary="Retrieve summary post data",
+     *     tags={"Blog"},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Summary retrieved successfully."
+     *     )
+     * )
+     */
+    public function summary(): JsonResponse
     {
         $latestPosts = Post::query()->withRelations()->latest()->limit(5)->get();
         $mostViewedPosts = Post::query()->withRelations()->orderByDesc('views')->limit(5)->get();
@@ -51,7 +69,7 @@ class PostController extends BaseController
 
     /**
      * @OA\Get(
-     *     path="/api/search",
+     *     path="/api/posts/search",
      *     summary="Search for posts",
      *     tags={"Blog"},
      *     @OA\Response(
@@ -72,24 +90,6 @@ class PostController extends BaseController
             ->latest();
 
         return $this->paginateAndRespond($query, $validated);
-    }
-
-    /**
-     * @OA\Get(
-     *     path="/api/posts",
-     *     summary="Retrieve all posts",
-     *     tags={"Blog"},
-     *     @OA\Response(
-     *         response=200,
-     *         description="Posts retrieved successfully."
-     *     )
-     * )
-     */
-    public function posts(PostRequest $request): JsonResponse
-    {
-        $query = Post::query()->withRelations()->latest();
-
-        return $this->paginateAndRespond($query, $request->validated());
     }
 
     /**
