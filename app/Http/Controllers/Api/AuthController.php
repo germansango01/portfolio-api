@@ -42,7 +42,7 @@ class AuthController extends BaseController
         $token = $user->createToken('API Token')->accessToken;
 
         return $this->sendData(
-            ['token' => $token, 'user' => (new UserResource($user))->resolve()],
+            ['token' => $token],
             __('auth.success_register')
         );
     }

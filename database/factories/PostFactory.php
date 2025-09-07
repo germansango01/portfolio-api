@@ -23,7 +23,7 @@ class PostFactory extends Factory
             'title' => $title,
             'slug' => Str::slug($title),
             'content' => $this->faker->paragraphs(5, true),
-            'image_url' => $this->faker->imageUrl(800, 600, 'nature', true),
+            'image_url' => "https://picsum.photos/id/" . $this->faker->numberBetween(1, 100) . "/600/400",
             'views' => $this->faker->numberBetween(0, 5000),
         ];
     }
