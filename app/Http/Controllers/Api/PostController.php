@@ -48,7 +48,7 @@ class PostController extends BaseController
         $latestPosts = Post::query()->withRelations()->latest()->limit(5)->get();
         $mostViewedPosts = Post::query()->withRelations()->orderByDesc('views')->limit(5)->get();
 
-        $categories = Category::select('id', 'name')
+        $categories = Category::select('id', 'name', 'slug')
             ->with(['posts' => function ($query) {
                 $query->withRelations()->latest()->limit(5);
             }])
@@ -57,6 +57,7 @@ class PostController extends BaseController
         $postsByCategory = $categories->map(fn ($category) => [
             'id'    => $category->id,
             'name'  => $category->name,
+            'slug'  => $category->slug,
             'posts' => PostResource::collection($category->posts)->resolve(),
         ]);
 
