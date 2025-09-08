@@ -199,7 +199,9 @@ class PostController extends BaseController
             return $this->sendError(__('messages.post_not_found'), 404);
         }
 
-        return $this->sendData(PostResource::make($post)->resolve(), __('messages.post_retrieved'));
+        return $this->sendData([
+            'post' => PostResource::make($post)->resolve(),
+        ], __('messages.post_retrieved'));
     }
 
     /**
