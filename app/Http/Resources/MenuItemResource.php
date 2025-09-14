@@ -70,13 +70,14 @@ class MenuItemResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'name' => $this->name,
-            'title' => $this->title,
+            'label' => $this->label,
+            'icon' => $this->icon,
+            'route' => $this->route,
             'url' => $this->url,
+            'shortcut' => $this->shortcut,
             'position' => $this->position,
-            'menu_id' => $this->menu_id,
             'parent_id' => $this->parent_id,
-            'children' => $this->whenLoaded('children', function () { return self::collection($this->children); }),
+            'items' => $this->whenLoaded('children', function () { return self::collection($this->children); }),
         ];
     }
 }

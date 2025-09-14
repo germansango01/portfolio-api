@@ -47,8 +47,8 @@ class MenuController extends BaseController
             ->get();
 
         return $this->sendData([
-            'menu' =>MenuResource::make($menu)->resolve(),
-            'items' => MenuItemResource::collection($items)->resolve(),
+            'parent' =>MenuResource::make($menu)->resolve(),
+            'menus' => MenuItemResource::collection($items)->resolve(),
         ], __('menu.success_list'));
     }
 }

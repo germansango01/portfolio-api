@@ -15,13 +15,13 @@ class MenuItemSeeder extends Seeder
     {
         $menus = Menu::all();
 
-        MenuItem::factory()->count(10)->make()->each(function ($item) use ($menus) {
+        MenuItem::factory()->count(15)->make()->each(function ($item) use ($menus) {
             $item->menu_id = $menus->random()->id;
             $item->save();
 
             // Add children to some items
             if (rand(0, 1)) {
-                MenuItem::factory()->count(2)->create([
+                MenuItem::factory()->count(4)->create([
                     'menu_id' => $item->menu_id,
                     'parent_id' => $item->id,
                 ]);

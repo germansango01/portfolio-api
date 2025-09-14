@@ -16,9 +16,11 @@ return new class extends Migration {
     {
         Schema::create('menu_items', function (Blueprint $table) {
             $table->id();
-            $table->string('name')->unique();
-            $table->text('title')->nullable(false);
-            $table->string('url')->nullable(false);
+            $table->string('label')->unique();
+            $table->text('icon')->nullable();
+            $table->string('route')->nullable();
+            $table->string('url')->nullable();
+            $table->string('shortcut')->nullable();
             $table->integer('parent_id')->nullable();
             $table->integer('position')->nullable(false);
             $table->foreignId('menu_id')->constrained()->onDelete('cascade');
