@@ -29,5 +29,5 @@ Route::group(['middleware' => 'auth:api'], function () {
     });
 
     /* Rutas de menú */
-    Route::get('/menu/{menu:id}', [MenuController::class, 'index'])->name('api.menu.index');
+    Route::get('/menus/{menu:id}', [MenuController::class, 'index'])->name('api.menu.index');
 });
