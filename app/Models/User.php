@@ -15,7 +15,9 @@ class User extends Authenticatable implements OAuthenticatable
     /** @use HasApiTokens<\Laravel\Passport\PassportServiceProvider> */
     /** @use HasFactory<\Database\Factories\UserFactory> */
     /** @use Notifiable<\Illuminate\Notifications\Notification> */
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens;
+    use HasFactory;
+    use Notifiable;
 
     /**
      * The attributes that are mass assignable.
