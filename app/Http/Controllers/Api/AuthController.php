@@ -43,7 +43,7 @@ class AuthController extends BaseController
 
         return $this->sendData(
             ['token' => $token],
-            __('auth.success_register')
+            __('auth.success_register'),
         );
     }
 
@@ -68,7 +68,7 @@ class AuthController extends BaseController
      */
     public function login(LoginRequest $request): JsonResponse
     {
-        if (!Auth::attempt($request->only('email', 'password'))) {
+        if (! Auth::attempt($request->only('email', 'password'))) {
             return $this->sendError(__('auth.failed'));
         }
 
@@ -118,8 +118,12 @@ class AuthController extends BaseController
      */
     public function user(Request $request): JsonResponse
     {
-        $user = (new UserResource($request->user()))->resolve();
+        $user = Auth::user();
+        $roles = $user->getRoleNames();
 
-        return $this->sendData(['user' => $user], __('auth.user_retrieved'));
+        return $this->sendData([
+            'user' => UserResource::make($user)->resolve(),
+            'roles' => $roles,
+        ], __('auth.user_retrieved'));
     }
 }

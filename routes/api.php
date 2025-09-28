@@ -1,8 +1,10 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\MenuController;
 use App\Http\Controllers\Api\PostController;
+use App\Http\Controllers\Api\TagController;
 use Illuminate\Support\Facades\Route;
 
 /* Rutas públicas */
@@ -17,6 +19,14 @@ Route::group(['middleware' => 'auth:api'], function () {
         Route::get('/user', 'user')->name('api.user');
     });
 
+    /* Rutas de categorías */
+    Route::controller(CategoryController::class)->group(function () {
+        Route::get('/categories', 'index')->name('api.categories');
+    });
+
+    /* Rutas de menú */
+    Route::get('/menus/{menu:id}', [MenuController::class, 'index'])->name('api.menu.index');
+
     /* Rutas de posts */
     Route::controller(PostController::class)->group(function () {
         Route::get('/posts/summary', 'summary')->name('api.posts.summary');
@@ -28,6 +38,9 @@ Route::group(['middleware' => 'auth:api'], function () {
         Route::get('/posts', 'index')->name('api.posts.index');
     });
 
-    /* Rutas de menú */
-    Route::get('/menus/{menu:id}', [MenuController::class, 'index'])->name('api.menu.index');
+    /* Rutas de etiquetas */
+    Route::controller(TagController::class)->group(function () {
+        Route::get('/tags', 'index')->name('api.tags');
+    });
+
 });
