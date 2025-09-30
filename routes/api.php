@@ -22,6 +22,7 @@ Route::group(['middleware' => 'auth:api'], function () {
     /* Rutas de categorías */
     Route::controller(CategoryController::class)->group(function () {
         Route::get('/categories', 'index')->name('api.categories');
+        Route::get('/category/{slug}', 'show')->name('api.category');
     });
 
     /* Rutas de menú */
@@ -41,6 +42,7 @@ Route::group(['middleware' => 'auth:api'], function () {
     /* Rutas de etiquetas */
     Route::controller(TagController::class)->group(function () {
         Route::get('/tags', 'index')->name('api.tags');
+        Route::get('/tag/{slug}', 'show')->name('api.tag');
     });
 
 });

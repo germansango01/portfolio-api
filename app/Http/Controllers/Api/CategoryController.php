@@ -11,11 +11,23 @@ class CategoryController extends BaseController
 {
     public function index(Request $request): JsonResponse
     {
-
         $categories = Category::orderBy('name')->get();
 
         return $this->sendData([
             'categories' => CategoryResource::collection($categories)->resolve(),
-        ], __('menu.success_list'));
+        ], __('messages.categories_retrieved'));
+    }
+
+    public function show(string $slug): JsonResponse
+    {
+        $category = Category::where('slug', $slug)->first();
+
+        if (! $category) {
+            return $this->sendError(__('messages.category_not_found'), 404);
+        }
+
+        return $this->sendData([
+            'category' => CategoryResource::make($category)->resolve(),
+        ], __('messages.category_retrieved'));
     }
 }
