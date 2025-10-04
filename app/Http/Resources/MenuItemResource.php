@@ -72,12 +72,14 @@ class MenuItemResource extends JsonResource
             'id' => $this->id,
             'label' => $this->label,
             'icon' => $this->icon,
-            'route' => $this->route,
-            'url' => $this->url,
+            'route' => $this->url,
+            // 'url' => $this->url,
             'shortcut' => $this->shortcut,
             'position' => $this->position,
             'parent_id' => $this->parent_id,
-            'items' => $this->whenLoaded('children', function () { return self::collection($this->children); }),
+            'items' => $this->whenLoaded('children', function () {
+                return $this->children->isNotEmpty() ? self::collection($this->children) : null;
+            }),
         ];
     }
 }
