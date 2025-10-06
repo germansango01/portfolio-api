@@ -6,6 +6,7 @@ use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
+use Illuminate\Auth\Events\Verified;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -72,10 +73,55 @@ class AuthController extends BaseController
             return $this->sendError(__('auth.failed'));
         }
 
+        /** @var User $user */
         $user = Auth::user();
+
+        if (! $user->hasVerifiedEmail()) {
+            return $this->sendError(__('auth.email_not_verified'), 403);
+        }
+
         $token = $user->createToken('API Token')->accessToken;
 
         return $this->sendData(['token' => $token], __('auth.success_login'));
+    }
+
+    public function verify(Request $request): JsonResponse
+    {
+        $user = User::findOrFail($request->route('id'));
+
+        // Comprueba si el usuario ya ha verificado su email
+        if ($user->hasVerifiedEmail()) {
+            return $this->sendData([], __('auth.email_already_verified'));
+        }
+
+        // Verifica el email
+        if ($user->markEmailAsVerified()) {
+            // Dispara el evento 'Verified'
+            event(new Verified($user));
+        }
+
+        return $this->sendSuccess(__('auth.email_verified_successfully'));
+    }
+
+    /**
+     * Reenvía el email de verificación.
+     * El usuario debe autenticarse o pasar email (vamos por seguridad: autenticado).
+     */
+    public function resend(Request $request): JsonResponse
+    {
+        $user = $request->user();
+
+        if (! $user) {
+            return response()->json(['message' => 'Unauthenticated.'], 401);
+        }
+
+        if ($user->hasVerifiedEmail()) {
+            return response()->json(['message' => 'Email already verified.'], 400);
+        }
+
+        $user->sendEmailVerificationNotification();
+
+        return response()->json(['message' => 'Verification link resent.']);
     }
 
     /**

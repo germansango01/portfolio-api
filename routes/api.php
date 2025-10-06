@@ -8,8 +8,14 @@ use App\Http\Controllers\Api\TagController;
 use Illuminate\Support\Facades\Route;
 
 /* Rutas públicas */
-Route::post('/register', [AuthController::class, 'register'])->name('api.register');
-Route::post('/login', [AuthController::class, 'login'])->name('api.login');
+
+/* Rutas de autenticación */
+Route::controller(AuthController::class)->group(function () {
+    Route::post('/register', 'register')->name('api.register');
+    Route::post('/login', 'login')->name('api.login');
+    Route::get('email/verify/{id}/{hash}', 'verify')->name('verification.verify');
+    Route::post('email/resend', 'resend')->name('verification.send');
+});
 
 /* Rutas protegidas */
 Route::group(['middleware' => 'auth:api'], function () {
@@ -44,5 +50,4 @@ Route::group(['middleware' => 'auth:api'], function () {
         Route::get('/tags', 'index')->name('api.tags');
         Route::get('/tag/{slug}', 'show')->name('api.tag');
     });
-
 });
