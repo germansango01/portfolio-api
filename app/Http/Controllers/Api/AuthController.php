@@ -7,6 +7,7 @@ use App\Http\Requests\RegisterRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Auth\Events\Verified;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -37,15 +38,12 @@ class AuthController extends BaseController
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
-            'password' => $request->password,
+            'password' => bcrypt($request->password),
         ]);
 
-        $token = $user->createToken('API Token')->accessToken;
+        $user->sendEmailVerificationNotification();
 
-        return $this->sendData(
-            ['token' => $token],
-            __('auth.success_register'),
-        );
+        return $this->sendSuccess(__('auth.success_register_pending_verification'));
     }
 
     /**
@@ -70,7 +68,7 @@ class AuthController extends BaseController
     public function login(LoginRequest $request): JsonResponse
     {
         if (! Auth::attempt($request->only('email', 'password'))) {
-            return $this->sendError(__('auth.failed'));
+            return $this->sendError(__('auth.failed'), 401);
         }
 
         /** @var User $user */
@@ -85,18 +83,32 @@ class AuthController extends BaseController
         return $this->sendData(['token' => $token], __('auth.success_login'));
     }
 
+    /**
+     * Verifica el email desde un enlace firmado
+     * Ruta: GET /api/email/verify/{id}/{hash}
+     * Middleware: auth:api, signed
+     */
+    public function verifySigned(EmailVerificationRequest $request): JsonResponse
+    {
+        $request->fulfill();
+
+        return $this->sendSuccess(__('auth.email_verified_successfully'));
+    }
+
+    /**
+     * Verifica el email manualmente (sin firma)
+     * Ruta: POST /api/email/verify
+     * Body: { "id": 1 }
+     */
     public function verify(Request $request): JsonResponse
     {
-        $user = User::findOrFail($request->route('id'));
+        $user = User::findOrFail($request->input('id'));
 
-        // Comprueba si el usuario ya ha verificado su email
         if ($user->hasVerifiedEmail()) {
             return $this->sendData([], __('auth.email_already_verified'));
         }
 
-        // Verifica el email
         if ($user->markEmailAsVerified()) {
-            // Dispara el evento 'Verified'
             event(new Verified($user));
         }
 
@@ -104,24 +116,25 @@ class AuthController extends BaseController
     }
 
     /**
-     * Reenvía el email de verificación.
-     * El usuario debe autenticarse o pasar email (vamos por seguridad: autenticado).
+     * Reenvía el email de verificación
+     * Ruta: POST /api/email/resend
+     * Middleware: auth:api
      */
     public function resend(Request $request): JsonResponse
     {
         $user = $request->user();
 
         if (! $user) {
-            return response()->json(['message' => 'Unauthenticated.'], 401);
+            return $this->sendError(__('auth.unauthenticated'), 401);
         }
 
         if ($user->hasVerifiedEmail()) {
-            return response()->json(['message' => 'Email already verified.'], 400);
+            return $this->sendError(__('auth.email_already_verified'), 400);
         }
 
         $user->sendEmailVerificationNotification();
 
-        return response()->json(['message' => 'Verification link resent.']);
+        return $this->sendSuccess(__('auth.verification_link_resent'));
     }
 
     /**
