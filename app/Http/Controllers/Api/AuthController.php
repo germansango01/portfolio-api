@@ -7,7 +7,6 @@ use App\Http\Requests\RegisterRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Auth\Events\Verified;
-use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -84,33 +83,30 @@ class AuthController extends BaseController
     }
 
     /**
-     * Verifica el email desde un enlace firmado
-     * Ruta: GET /api/email/verify/{id}/{hash}
-     * Middleware: auth:api, signed
-     */
-    public function verifySigned(EmailVerificationRequest $request): JsonResponse
-    {
-        $request->fulfill();
-
-        return $this->sendSuccess(__('auth.email_verified_successfully'));
-    }
-
-    /**
      * Verifica el email manualmente (sin firma)
      * Ruta: POST /api/email/verify
      * Body: { "id": 1 }
      */
     public function verify(Request $request): JsonResponse
     {
+        $request->validate([
+            'id' => 'required|integer|exists:users,id',
+            'hash' => 'required|string',
+        ]);
+
         $user = User::findOrFail($request->input('id'));
+
+        // Validar que el hash coincide con el email
+        if (! hash_equals($request->input('hash'), sha1($user->getEmailForVerification()))) {
+            return $this->sendError(__('auth.invalid_verification_link'), 403);
+        }
 
         if ($user->hasVerifiedEmail()) {
             return $this->sendData([], __('auth.email_already_verified'));
         }
 
-        if ($user->markEmailAsVerified()) {
-            event(new Verified($user));
-        }
+        $user->markEmailAsVerified();
+        event(new Verified($user));
 
         return $this->sendSuccess(__('auth.email_verified_successfully'));
     }
