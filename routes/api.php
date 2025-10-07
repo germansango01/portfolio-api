@@ -13,9 +13,12 @@ use Illuminate\Support\Facades\Route;
 Route::controller(AuthController::class)->group(function () {
     Route::post('/register', 'register')->name('api.register');
     Route::post('/login', 'login')->name('api.login');
-    Route::get('email/verify/{id}/{hash}', 'verify')->name('verification.verify');
-    Route::post('email/resend', 'resend')->name('verification.send');
+    Route::post('/email/resend', 'resend')->name('verification.send');
 });
+
+Route::get('/email/verify/{id}/{hash}', [AuthController::class, 'verify'])
+    ->middleware(['signed', 'throttle:6,1'])
+    ->name('verification.verify');
 
 /* Rutas protegidas */
 Route::group(['middleware' => 'auth:api'], function () {

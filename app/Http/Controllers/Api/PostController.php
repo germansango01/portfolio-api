@@ -54,15 +54,15 @@ class PostController extends BaseController
             }])
             ->get();
 
-        $postsByCategory = $categories->map(fn ($category) => [
-            'id'    => $category->id,
-            'name'  => $category->name,
-            'slug'  => $category->slug,
+        $postsByCategory = $categories->map(fn($category) => [
+            'id' => $category->id,
+            'name' => $category->name,
+            'slug' => $category->slug,
             'posts' => PostResource::collection($category->posts)->resolve(),
         ]);
 
         return $this->sendData([
-            'latest_posts'      => PostResource::collection($latestPosts)->resolve(),
+            'latest_posts' => PostResource::collection($latestPosts)->resolve(),
             'most_viewed_posts' => PostResource::collection($mostViewedPosts)->resolve(),
             'posts_by_category' => $postsByCategory,
         ], __('messages.blog_retrieved'));
@@ -108,7 +108,7 @@ class PostController extends BaseController
     {
         $category = Category::where('slug', $categorySlug)->first();
 
-        if (!$category) {
+        if (! $category) {
             return $this->sendError(__('messages.category_not_found'), 404);
         }
 
@@ -132,7 +132,7 @@ class PostController extends BaseController
     {
         $tag = Tag::where('slug', $tagSlug)->first();
 
-        if (!$tag) {
+        if (! $tag) {
             return $this->sendError(__('messages.tag_not_found'), 404);
         }
 
@@ -160,7 +160,7 @@ class PostController extends BaseController
     {
         $user = User::find($userId);
 
-        if (!$user) {
+        if (! $user) {
             return $this->sendError(__('messages.user_not_found'), 404);
         }
 
@@ -195,7 +195,7 @@ class PostController extends BaseController
     {
         $post = Post::query()->withRelations()->where('slug', $slug)->first();
 
-        if (!$post) {
+        if (! $post) {
             return $this->sendError(__('messages.post_not_found'), 404);
         }
 
@@ -211,24 +211,24 @@ class PostController extends BaseController
     {
         $posts = $query->paginate(
             perPage: $validated['per_page'] ?? 15,
-            page: $validated['page'] ?? 1
+            page: $validated['page'] ?? 1,
         );
 
         $transformed = PostResource::collection($posts)->resolve();
 
         return $this->sendData([
             'posts' => $transformed,
-            'meta'  => [
+            'meta' => [
                 'current_page' => $posts->currentPage(),
-                'last_page'    => $posts->lastPage(),
-                'per_page'     => $posts->perPage(),
-                'total'        => $posts->total(),
+                'last_page' => $posts->lastPage(),
+                'per_page' => $posts->perPage(),
+                'total' => $posts->total(),
             ],
             'links' => [
                 'first' => $posts->url(1),
-                'last'  => $posts->url($posts->lastPage()),
-                'prev'  => $posts->previousPageUrl(),
-                'next'  => $posts->nextPageUrl(),
+                'last' => $posts->url($posts->lastPage()),
+                'prev' => $posts->previousPageUrl(),
+                'next' => $posts->nextPageUrl(),
             ],
         ], __('messages.posts_retrieved'));
     }

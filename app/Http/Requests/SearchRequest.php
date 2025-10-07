@@ -64,11 +64,11 @@ class SearchRequest extends BaseFormRequest
     public function rules(): array
     {
         return [
-            'q'        => ['required', 'string', 'max:100'],
+            'q' => ['required', 'string', 'max:100'],
             'category' => ['nullable', 'integer', 'exists:categories,id'],
-            'author'   => ['nullable', 'integer', 'exists:users,id'],
-            'tag'      => ['nullable', 'integer', 'exists:tags,id'],
-            'page'     => ['nullable', 'integer', 'min:1'],
+            'author' => ['nullable', 'integer', 'exists:users,id'],
+            'tag' => ['nullable', 'integer', 'exists:tags,id'],
+            'page' => ['nullable', 'integer', 'min:1'],
             'per_page' => ['nullable', 'integer', 'min:1', 'max:50'],
         ];
     }

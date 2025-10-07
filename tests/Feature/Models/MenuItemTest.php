@@ -10,7 +10,8 @@ use Tests\TestCase;
 
 class MenuItemTest extends TestCase
 {
-    use RefreshDatabase, WithFaker;
+    use RefreshDatabase;
+    use WithFaker;
 
     public function test_menu_item_can_be_created()
     {
@@ -23,12 +24,12 @@ class MenuItemTest extends TestCase
     public function test_menu_item_has_fillable_attributes()
     {
         $menuItem = new MenuItem([
-            'name'      => 'Home',
-            'title'     => 'Home Page',
-            'url'       => '/home',
+            'name' => 'Home',
+            'title' => 'Home Page',
+            'url' => '/home',
             'parent_id' => null,
-            'position'  => 1,
-            'menu_id'   => Menu::factory()->create()->id,
+            'position' => 1,
+            'menu_id' => Menu::factory()->create()->id,
         ]);
 
         $this->assertEquals('Home', $menuItem->name);

@@ -13,7 +13,8 @@ use Tests\TestCase;
 
 class SearchRequestTest extends TestCase
 {
-    use RefreshDatabase, WithFaker;
+    use RefreshDatabase;
+    use WithFaker;
 
     public function test_q_is_required()
     {

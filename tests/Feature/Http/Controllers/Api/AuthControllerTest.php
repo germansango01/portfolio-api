@@ -54,10 +54,10 @@ class AuthControllerTest extends TestCase
 
         $response->assertStatus(422)
             ->assertJsonStructure([
-                    'success',
-                    'message',
-                    'errors' => [],
-                ]);
+                'success',
+                'message',
+                'errors' => [],
+            ]);
     }
 
     public function test_login_returns_token_with_valid_credentials()

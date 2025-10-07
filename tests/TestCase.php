@@ -12,8 +12,7 @@ abstract class TestCase extends BaseTestCase
         parent::setUp();
 
         // Asegura que el cliente de acceso personal esté disponible
-        if (DB::table('oauth_clients')->count() === 0)
-        {
+        if (DB::table('oauth_clients')->count() === 0) {
             DB::table('oauth_clients')->insert([
                 'id' => '0198ca0b-8f4a-7184-8b81-cdfae97d410d',
                 'name' => 'Laravel',

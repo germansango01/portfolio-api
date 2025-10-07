@@ -37,7 +37,7 @@ class MenuController extends BaseController
     {
         $menu = Menu::find($menuId);
 
-        if (!$menu) {
+        if (! $menu) {
             return $this->sendError(__('messages.menu_not_found'), 404);
         }
 
@@ -47,7 +47,7 @@ class MenuController extends BaseController
             ->get();
 
         return $this->sendData([
-            'parent' =>MenuResource::make($menu)->resolve(),
+            'parent' => MenuResource::make($menu)->resolve(),
             'menus' => MenuItemResource::collection($items)->resolve(),
         ], __('menu.success_list'));
     }
