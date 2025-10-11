@@ -3,10 +3,7 @@
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
-// Asegúrate de que los siguientes namespaces NO son necesarios aquí si ya están en RouteServiceProvider.php,
-// pero en este enfoque moderno, las funciones de RateLimiter deben usarse en el array 'limits'.
 use Illuminate\Foundation\Configuration\Middleware;
-use Illuminate\Support\Facades\RateLimiter; // ¡No es necesario aquí, ya que se usa la sintaxis del array!
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
