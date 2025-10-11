@@ -16,9 +16,11 @@ class PostController extends BaseController
 {
     /**
      * @OA\Get(
-     *     path="/api/posts",
+     *     path="/api/v1/posts",
      *     summary="Retrieve all posts",
      *     tags={"Blog"},
+     *     @OA\Parameter(name="page", in="query", description="Page number", @OA\Schema(type="integer")),
+     *     @OA\Parameter(name="per_page", in="query", description="Items per page", @OA\Schema(type="integer")),
      *     @OA\Response(
      *         response=200,
      *         description="Posts retrieved successfully."
@@ -34,7 +36,7 @@ class PostController extends BaseController
 
     /**
      * @OA\Get(
-     *     path="/api/posts/summary",
+     *     path="/api/v1/posts/summary",
      *     summary="Retrieve summary post data",
      *     tags={"Blog"},
      *     @OA\Response(
@@ -70,9 +72,15 @@ class PostController extends BaseController
 
     /**
      * @OA\Get(
-     *     path="/api/posts/search",
+     *     path="/api/v1/posts/search",
      *     summary="Search for posts",
      *     tags={"Blog"},
+     *     @OA\Parameter(name="q", in="query", description="Search term", @OA\Schema(type="string")),
+     *     @OA\Parameter(name="category", in="query", description="Category slug", @OA\Schema(type="string")),
+     *     @OA\Parameter(name="author", in="query", description="Author ID", @OA\Schema(type="integer")),
+     *     @OA\Parameter(name="tag", in="query", description="Tag slug", @OA\Schema(type="string")),
+     *     @OA\Parameter(name="page", in="query", description="Page number", @OA\Schema(type="integer")),
+     *     @OA\Parameter(name="per_page", in="query", description="Items per page", @OA\Schema(type="integer")),
      *     @OA\Response(
      *         response=200,
      *         description="Posts retrieved successfully."
@@ -95,12 +103,25 @@ class PostController extends BaseController
 
     /**
      * @OA\Get(
-     *     path="/api/posts/category/{categorySlug}",
+     *     path="/api/v1/posts/category/{categorySlug}",
      *     summary="Retrieve posts by category",
      *     tags={"Blog"},
+     *     @OA\Parameter(
+     *         name="categorySlug",
+     *         in="path",
+     *         required=true,
+     *         description="Category slug",
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Parameter(name="page", in="query", description="Page number", @OA\Schema(type="integer")),
+     *     @OA\Parameter(name="per_page", in="query", description="Items per page", @OA\Schema(type="integer")),
      *     @OA\Response(
      *         response=200,
      *         description="Posts retrieved successfully."
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Category not found."
      *     )
      * )
      */
@@ -119,12 +140,25 @@ class PostController extends BaseController
 
     /**
      * @OA\Get(
-     *     path="/api/posts/tag/{tagSlug}",
+     *     path="/api/v1/posts/tag/{tagSlug}",
      *     summary="Retrieve posts by tag",
      *     tags={"Blog"},
+     *     @OA\Parameter(
+     *         name="tagSlug",
+     *         in="path",
+     *         required=true,
+     *         description="Tag slug",
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Parameter(name="page", in="query", description="Page number", @OA\Schema(type="integer")),
+     *     @OA\Parameter(name="per_page", in="query", description="Items per page", @OA\Schema(type="integer")),
      *     @OA\Response(
      *         response=200,
      *         description="Posts retrieved successfully."
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Tag not found."
      *     )
      * )
      */
@@ -147,12 +181,25 @@ class PostController extends BaseController
 
     /**
      * @OA\Get(
-     *     path="/api/posts/user/{userId}",
+     *     path="/api/v1/posts/user/{userId}",
      *     summary="Retrieve posts by user",
      *     tags={"Blog"},
+     *     @OA\Parameter(
+     *         name="userId",
+     *         in="path",
+     *         required=true,
+     *         description="User ID",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Parameter(name="page", in="query", description="Page number", @OA\Schema(type="integer")),
+     *     @OA\Parameter(name="per_page", in="query", description="Items per page", @OA\Schema(type="integer")),
      *     @OA\Response(
      *         response=200,
      *         description="Posts retrieved successfully."
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="User not found."
      *     )
      * )
      */
@@ -171,7 +218,7 @@ class PostController extends BaseController
 
     /**
      * @OA\Get(
-     *     path="/api/posts/{slug}",
+     *     path="/api/v1/posts/{slug}",
      *     summary="Retrieve a single post",
      *     tags={"Blog"},
      *     @OA\Parameter(

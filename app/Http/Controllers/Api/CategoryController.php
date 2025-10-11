@@ -9,6 +9,25 @@ use Illuminate\Http\Request;
 
 class CategoryController extends BaseController
 {
+    /**
+     * @OA\Get(
+     *     path="/api/v1/categories",
+     *     summary="Retrieve all categories",
+     *     tags={"Categories"},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Categories retrieved successfully.",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string"),
+     *             @OA\Property(property="data", type="object",
+     *                 @OA\Property(property="categories", type="array", @OA\Items(ref="#/components/schemas/Category"))
+     *             )
+     *         )
+     *     )
+     * )
+     */
     public function index(Request $request): JsonResponse
     {
         $categories = Category::orderBy('name')->get();
@@ -18,6 +37,36 @@ class CategoryController extends BaseController
         ], __('messages.categories_retrieved'));
     }
 
+    /**
+     * @OA\Get(
+     *     path="/api/v1/categories/{slug}",
+     *     summary="Retrieve a single category by slug",
+     *     tags={"Categories"},
+     *     @OA\Parameter(
+     *         name="slug",
+     *         in="path",
+     *         required=true,
+     *         description="Category slug",
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Category retrieved successfully.",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string"),
+     *             @OA\Property(property="data", type="object",
+     *                 @OA\Property(property="category", ref="#/components/schemas/Category")
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Category not found."
+     *     )
+     * )
+     */
     public function show(string $slug): JsonResponse
     {
         $category = Category::where('slug', $slug)->first();

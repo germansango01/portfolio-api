@@ -16,7 +16,7 @@ class AuthController extends BaseController
 {
     /**
      * @OA\Post(
-     * path="/api/register",
+     * path="/api/v1/register",
      * summary="Register a new user",
      * tags={"Auth"},
      * @OA\RequestBody(
@@ -53,7 +53,7 @@ class AuthController extends BaseController
 
     /**
      * @OA\Post(
-     * path="/api/login",
+     * path="/api/v1/login",
      * summary="Login a user and return the API token",
      * tags={"Auth"},
      * @OA\RequestBody(
@@ -103,6 +103,35 @@ class AuthController extends BaseController
         return $this->sendData(['token' => $token], __('auth.success_login'));
     }
 
+    /**
+     * @OA\Get(
+     *     path="/api/v1/email/verify/{id}/{hash}",
+     *     summary="Verify user's email address",
+     *     tags={"Auth"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="User ID",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Parameter(
+     *         name="hash",
+     *         in="path",
+     *         required=true,
+     *         description="Verification hash",
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Response(
+     *         response=302,
+     *         description="Redirects to the frontend with a status query parameter."
+     *     ),
+     *      @OA\Response(
+     *         response=404,
+     *         description="User not found."
+     *     )
+     * )
+     */
     // El tipo de retorno ahora incluye RedirectResponse
     public function verify(Request $request): RedirectResponse
     {
@@ -124,7 +153,7 @@ class AuthController extends BaseController
 
     /**
      * @OA\Post(
-     * path="/api/email/resend",
+     * path="/api/v1/email/resend",
      * summary="Resend the email verification link to the authenticated user",
      * tags={"Auth"},
      * security={{"bearerAuth":{}}},
@@ -163,7 +192,7 @@ class AuthController extends BaseController
 
     /**
      * @OA\Post(
-     * path="/api/logout",
+     * path="/api/v1/logout",
      * summary="Logout a user by revoking the current access token",
      * tags={"Auth"},
      * security={{"bearerAuth":{}}},
@@ -187,7 +216,7 @@ class AuthController extends BaseController
 
     /**
      * @OA\Get(
-     * path="/api/user",
+     * path="/api/v1/user",
      * summary="Get authenticated user details",
      * tags={"Auth"},
      * security={{"bearerAuth":{}}},

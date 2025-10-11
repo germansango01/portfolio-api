@@ -13,7 +13,7 @@ class MenuController extends BaseController
 {
     /**
      * @OA\Get(
-     *     path="/api/menus/{menuId}",
+     *     path="/api/v1/menus/{menuId}",
      *     summary="Retrieve menu items by menu ID",
      *     tags={"Menus"},
      *     @OA\Parameter(
