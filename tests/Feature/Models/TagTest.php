@@ -11,7 +11,8 @@ use Tests\TestCase;
 
 class TagTest extends TestCase
 {
-    use RefreshDatabase, WithFaker;
+    use RefreshDatabase;
+    use WithFaker;
 
     public function test_tag_can_be_created()
     {

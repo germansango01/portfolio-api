@@ -11,7 +11,8 @@ use Tests\TestCase;
 
 class UserTest extends TestCase
 {
-    use RefreshDatabase, WithFaker;
+    use RefreshDatabase;
+    use WithFaker;
 
     public function test_user_can_be_created()
     {
@@ -23,8 +24,8 @@ class UserTest extends TestCase
     public function test_user_has_fillable_attributes()
     {
         $user = new User([
-            'name'     => 'Test User',
-            'email'    => 'test@example.com',
+            'name' => 'Test User',
+            'email' => 'test@example.com',
             'password' => bcrypt('password'),
         ]);
 

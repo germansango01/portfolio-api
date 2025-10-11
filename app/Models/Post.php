@@ -72,7 +72,7 @@ class Post extends Model
     #[Scope]
     public function filterByCategory(Builder $query, ?int $categoryId): void
     {
-        $query->when($categoryId, fn (Builder $q) => $q->where('category_id', $categoryId));
+        $query->when($categoryId, fn(Builder $q) => $q->where('category_id', $categoryId));
     }
 
     /**
@@ -81,7 +81,7 @@ class Post extends Model
     #[Scope]
     public function filterByAuthor(Builder $query, ?int $authorId): void
     {
-        $query->when($authorId, fn (Builder $q) => $q->where('user_id', $authorId));
+        $query->when($authorId, fn(Builder $q) => $q->where('user_id', $authorId));
     }
 
     /**
@@ -90,6 +90,6 @@ class Post extends Model
     #[Scope]
     public function filterByTag(Builder $query, ?int $tagId): void
     {
-        $query->when($tagId, fn (Builder $q) => $q->whereHas('tags', fn (Builder $sub) => $sub->where('tags.id', $tagId)));
+        $query->when($tagId, fn(Builder $q) => $q->whereHas('tags', fn(Builder $sub) => $sub->where('tags.id', $tagId)));
     }
 }

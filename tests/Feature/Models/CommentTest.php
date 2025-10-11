@@ -11,7 +11,8 @@ use Tests\TestCase;
 
 class CommentTest extends TestCase
 {
-    use RefreshDatabase, WithFaker;
+    use RefreshDatabase;
+    use WithFaker;
 
     public function test_comment_can_be_created()
     {

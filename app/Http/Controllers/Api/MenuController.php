@@ -13,7 +13,7 @@ class MenuController extends BaseController
 {
     /**
      * @OA\Get(
-     *     path="/api/menus/{menuId}",
+     *     path="/api/v1/menus/{menuId}",
      *     summary="Retrieve menu items by menu ID",
      *     tags={"Menus"},
      *     @OA\Parameter(
@@ -37,7 +37,7 @@ class MenuController extends BaseController
     {
         $menu = Menu::find($menuId);
 
-        if (!$menu) {
+        if (! $menu) {
             return $this->sendError(__('messages.menu_not_found'), 404);
         }
 
@@ -47,8 +47,8 @@ class MenuController extends BaseController
             ->get();
 
         return $this->sendData([
-            'menu' =>MenuResource::make($menu)->resolve(),
-            'items' => MenuItemResource::collection($items)->resolve(),
+            'parent' => MenuResource::make($menu)->resolve(),
+            'menus' => MenuItemResource::collection($items)->resolve(),
         ], __('menu.success_list'));
     }
 }

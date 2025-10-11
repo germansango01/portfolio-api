@@ -14,7 +14,7 @@ class PostControllerTest extends TestCase
 {
     use RefreshDatabase;
 
-     protected function authenticate(): User
+    protected function authenticate(): User
     {
         $user = User::factory()->create();
         Passport::actingAs($user, [], 'api');

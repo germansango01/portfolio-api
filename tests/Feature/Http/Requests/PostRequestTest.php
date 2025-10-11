@@ -10,7 +10,8 @@ use Tests\TestCase;
 
 class PostRequestTest extends TestCase
 {
-    use RefreshDatabase, WithFaker;
+    use RefreshDatabase;
+    use WithFaker;
 
     public function test_page_is_valid()
     {

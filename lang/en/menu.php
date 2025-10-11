@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 return [
     'menu_id' => [
         'required' => 'The menu_id field is required.',

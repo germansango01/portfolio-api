@@ -48,8 +48,8 @@ class MenuControllerTest extends TestCase
 
         $response->assertStatus(404)
             ->assertJsonStructure([
-                    'success',
-                    'message',
-                ]);
+                'success',
+                'message',
+            ]);
     }
 }

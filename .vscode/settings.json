@@ -1,0 +1,29 @@
+{
+    "[php]": {
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "junstyle.php-cs-fixer"
+    },
+    "php-cs-fixer.config": ".php-cs-fixer.php",
+    "php-cs-fixer.executablePath": "${workspaceFolder}/vendor/bin/php-cs-fixer",
+    "php-cs-fixer.formatHtml": true,
+    "workbench.colorCustomizations": {
+        "activityBar.activeBackground": "#ffc830",
+        "activityBar.background": "#ffc830",
+        "activityBar.foreground": "#15202b",
+        "activityBar.inactiveForeground": "#15202b99",
+        "activityBarBadge.background": "#009f75",
+        "activityBarBadge.foreground": "#e7e7e7",
+        "commandCenter.border": "#15202b99",
+        "sash.hoverBorder": "#ffc830",
+        "statusBar.background": "#fcb900",
+        "statusBar.foreground": "#15202b",
+        "statusBarItem.hoverBackground": "#c99400",
+        "statusBarItem.remoteBackground": "#fcb900",
+        "statusBarItem.remoteForeground": "#15202b",
+        "titleBar.activeBackground": "#fcb900",
+        "titleBar.activeForeground": "#15202b",
+        "titleBar.inactiveBackground": "#fcb90099",
+        "titleBar.inactiveForeground": "#15202b99"
+    },
+    "peacock.color": "#FCB900"
+}
