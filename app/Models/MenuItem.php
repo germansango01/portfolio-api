@@ -18,7 +18,7 @@ class MenuItem extends Model
      * @var list<string>
      */
     protected $fillable = [
-        'name', 'title', 'url', 'parent_id', 'position', 'menu_id',
+        'label', 'icon', 'route', 'url', 'shortcut', 'parent_id', 'position', 'menu_id',
     ];
 
     /**

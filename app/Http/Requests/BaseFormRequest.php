@@ -24,14 +24,14 @@ class BaseFormRequest extends FormRequest
      */
     protected function failedValidation(Validator $validator)
     {
-        $errors = $validator->errors()->all();
+        $errors = $validator->errors()->toArray();
 
         throw new HttpResponseException(
             response()->json([
                 'success' => false,
                 'message' => __('messages.validation_error'),
                 'errors' => $errors,
-            ], Response::HTTP_UNPROCESSABLE_ENTITY)
+            ], Response::HTTP_UNPROCESSABLE_ENTITY),
         );
     }
 }

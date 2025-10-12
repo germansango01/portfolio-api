@@ -12,7 +12,8 @@ use Tests\TestCase;
 
 class PostTest extends TestCase
 {
-    use RefreshDatabase, WithFaker;
+    use RefreshDatabase;
+    use WithFaker;
 
     public function test_post_can_be_created()
     {
@@ -26,8 +27,8 @@ class PostTest extends TestCase
     {
         $user = User::factory()->create();
         $post = new Post([
-            'title'   => 'Test Post',
-            'slug'    => 'test-post',
+            'title' => 'Test Post',
+            'slug' => 'test-post',
             'content' => 'This is some test content.',
             'user_id' => $user->id,
         ]);
@@ -106,7 +107,7 @@ class PostTest extends TestCase
         $results = Post::query()->filterByCategory($category1->id)->get();
 
         $this->assertCount(2, $results);
-        $this->assertTrue($results->every(fn ($post) => $post->category_id === $category1->id));
+        $this->assertTrue($results->every(fn($post) => $post->category_id === $category1->id));
     }
 
     public function test_filter_by_author_scope_filters_posts()
@@ -120,7 +121,7 @@ class PostTest extends TestCase
         $results = Post::query()->filterByAuthor($user1->id)->get();
 
         $this->assertCount(2, $results);
-        $this->assertTrue($results->every(fn ($post) => $post->user_id === $user1->id));
+        $this->assertTrue($results->every(fn($post) => $post->user_id === $user1->id));
     }
 
     public function test_filter_by_tag_scope_filters_posts()
@@ -142,6 +143,6 @@ class PostTest extends TestCase
         $results = Post::query()->filterByTag($tag1->id)->get();
 
         $this->assertCount(2, $results);
-        $this->assertTrue($results->every(fn ($post) => $post->tags->contains($tag1)));
+        $this->assertTrue($results->every(fn($post) => $post->tags->contains($tag1)));
     }
 }

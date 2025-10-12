@@ -10,7 +10,8 @@ use Tests\TestCase;
 
 class MenuTest extends TestCase
 {
-    use RefreshDatabase, WithFaker;
+    use RefreshDatabase;
+    use WithFaker;
 
     public function test_menu_can_be_created()
     {

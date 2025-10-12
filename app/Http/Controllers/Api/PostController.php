@@ -16,34 +16,55 @@ class PostController extends BaseController
 {
     /**
      * @OA\Get(
-     *     path="/api/resume",
-     *     summary="Retrieve blog data",
+     *     path="/api/v1/posts",
+     *     summary="Retrieve all posts",
      *     tags={"Blog"},
+     *     @OA\Parameter(name="page", in="query", description="Page number", @OA\Schema(type="integer")),
+     *     @OA\Parameter(name="per_page", in="query", description="Items per page", @OA\Schema(type="integer")),
      *     @OA\Response(
      *         response=200,
-     *         description="Blog data retrieved successfully."
+     *         description="Posts retrieved successfully."
      *     )
      * )
      */
-    public function resume(): JsonResponse
+    public function index(PostRequest $request): JsonResponse
+    {
+        $query = Post::query()->withRelations()->latest();
+
+        return $this->paginateAndRespond($query, $request->validated());
+    }
+
+    /**
+     * @OA\Get(
+     *     path="/api/v1/posts/summary",
+     *     summary="Retrieve summary post data",
+     *     tags={"Blog"},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Summary retrieved successfully."
+     *     )
+     * )
+     */
+    public function summary(): JsonResponse
     {
         $latestPosts = Post::query()->withRelations()->latest()->limit(5)->get();
         $mostViewedPosts = Post::query()->withRelations()->orderByDesc('views')->limit(5)->get();
 
-        $categories = Category::select('id', 'name')
+        $categories = Category::select('id', 'name', 'slug')
             ->with(['posts' => function ($query) {
                 $query->withRelations()->latest()->limit(5);
             }])
             ->get();
 
-        $postsByCategory = $categories->map(fn ($category) => [
-            'id'    => $category->id,
-            'name'  => $category->name,
+        $postsByCategory = $categories->map(fn($category) => [
+            'id' => $category->id,
+            'name' => $category->name,
+            'slug' => $category->slug,
             'posts' => PostResource::collection($category->posts)->resolve(),
         ]);
 
         return $this->sendData([
-            'latest_posts'      => PostResource::collection($latestPosts)->resolve(),
+            'latest_posts' => PostResource::collection($latestPosts)->resolve(),
             'most_viewed_posts' => PostResource::collection($mostViewedPosts)->resolve(),
             'posts_by_category' => $postsByCategory,
         ], __('messages.blog_retrieved'));
@@ -51,9 +72,15 @@ class PostController extends BaseController
 
     /**
      * @OA\Get(
-     *     path="/api/search",
+     *     path="/api/v1/posts/search",
      *     summary="Search for posts",
      *     tags={"Blog"},
+     *     @OA\Parameter(name="q", in="query", description="Search term", @OA\Schema(type="string")),
+     *     @OA\Parameter(name="category", in="query", description="Category slug", @OA\Schema(type="string")),
+     *     @OA\Parameter(name="author", in="query", description="Author ID", @OA\Schema(type="integer")),
+     *     @OA\Parameter(name="tag", in="query", description="Tag slug", @OA\Schema(type="string")),
+     *     @OA\Parameter(name="page", in="query", description="Page number", @OA\Schema(type="integer")),
+     *     @OA\Parameter(name="per_page", in="query", description="Items per page", @OA\Schema(type="integer")),
      *     @OA\Response(
      *         response=200,
      *         description="Posts retrieved successfully."
@@ -76,30 +103,25 @@ class PostController extends BaseController
 
     /**
      * @OA\Get(
-     *     path="/api/posts",
-     *     summary="Retrieve all posts",
-     *     tags={"Blog"},
-     *     @OA\Response(
-     *         response=200,
-     *         description="Posts retrieved successfully."
-     *     )
-     * )
-     */
-    public function posts(PostRequest $request): JsonResponse
-    {
-        $query = Post::query()->withRelations()->latest();
-
-        return $this->paginateAndRespond($query, $request->validated());
-    }
-
-    /**
-     * @OA\Get(
-     *     path="/api/posts/category/{categorySlug}",
+     *     path="/api/v1/posts/category/{categorySlug}",
      *     summary="Retrieve posts by category",
      *     tags={"Blog"},
+     *     @OA\Parameter(
+     *         name="categorySlug",
+     *         in="path",
+     *         required=true,
+     *         description="Category slug",
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Parameter(name="page", in="query", description="Page number", @OA\Schema(type="integer")),
+     *     @OA\Parameter(name="per_page", in="query", description="Items per page", @OA\Schema(type="integer")),
      *     @OA\Response(
      *         response=200,
      *         description="Posts retrieved successfully."
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Category not found."
      *     )
      * )
      */
@@ -107,7 +129,7 @@ class PostController extends BaseController
     {
         $category = Category::where('slug', $categorySlug)->first();
 
-        if (!$category) {
+        if (! $category) {
             return $this->sendError(__('messages.category_not_found'), 404);
         }
 
@@ -118,12 +140,25 @@ class PostController extends BaseController
 
     /**
      * @OA\Get(
-     *     path="/api/posts/tag/{tagSlug}",
+     *     path="/api/v1/posts/tag/{tagSlug}",
      *     summary="Retrieve posts by tag",
      *     tags={"Blog"},
+     *     @OA\Parameter(
+     *         name="tagSlug",
+     *         in="path",
+     *         required=true,
+     *         description="Tag slug",
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Parameter(name="page", in="query", description="Page number", @OA\Schema(type="integer")),
+     *     @OA\Parameter(name="per_page", in="query", description="Items per page", @OA\Schema(type="integer")),
      *     @OA\Response(
      *         response=200,
      *         description="Posts retrieved successfully."
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Tag not found."
      *     )
      * )
      */
@@ -131,7 +166,7 @@ class PostController extends BaseController
     {
         $tag = Tag::where('slug', $tagSlug)->first();
 
-        if (!$tag) {
+        if (! $tag) {
             return $this->sendError(__('messages.tag_not_found'), 404);
         }
 
@@ -146,12 +181,25 @@ class PostController extends BaseController
 
     /**
      * @OA\Get(
-     *     path="/api/posts/user/{userId}",
+     *     path="/api/v1/posts/user/{userId}",
      *     summary="Retrieve posts by user",
      *     tags={"Blog"},
+     *     @OA\Parameter(
+     *         name="userId",
+     *         in="path",
+     *         required=true,
+     *         description="User ID",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Parameter(name="page", in="query", description="Page number", @OA\Schema(type="integer")),
+     *     @OA\Parameter(name="per_page", in="query", description="Items per page", @OA\Schema(type="integer")),
      *     @OA\Response(
      *         response=200,
      *         description="Posts retrieved successfully."
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="User not found."
      *     )
      * )
      */
@@ -159,7 +207,7 @@ class PostController extends BaseController
     {
         $user = User::find($userId);
 
-        if (!$user) {
+        if (! $user) {
             return $this->sendError(__('messages.user_not_found'), 404);
         }
 
@@ -170,7 +218,7 @@ class PostController extends BaseController
 
     /**
      * @OA\Get(
-     *     path="/api/posts/{slug}",
+     *     path="/api/v1/posts/{slug}",
      *     summary="Retrieve a single post",
      *     tags={"Blog"},
      *     @OA\Parameter(
@@ -194,11 +242,13 @@ class PostController extends BaseController
     {
         $post = Post::query()->withRelations()->where('slug', $slug)->first();
 
-        if (!$post) {
+        if (! $post) {
             return $this->sendError(__('messages.post_not_found'), 404);
         }
 
-        return $this->sendData(PostResource::make($post)->resolve(), __('messages.post_retrieved'));
+        return $this->sendData([
+            'post' => PostResource::make($post)->resolve(),
+        ], __('messages.post_retrieved'));
     }
 
     /**
@@ -208,24 +258,24 @@ class PostController extends BaseController
     {
         $posts = $query->paginate(
             perPage: $validated['per_page'] ?? 15,
-            page: $validated['page'] ?? 1
+            page: $validated['page'] ?? 1,
         );
 
         $transformed = PostResource::collection($posts)->resolve();
 
         return $this->sendData([
             'posts' => $transformed,
-            'meta'  => [
+            'meta' => [
                 'current_page' => $posts->currentPage(),
-                'last_page'    => $posts->lastPage(),
-                'per_page'     => $posts->perPage(),
-                'total'        => $posts->total(),
+                'last_page' => $posts->lastPage(),
+                'per_page' => $posts->perPage(),
+                'total' => $posts->total(),
             ],
             'links' => [
                 'first' => $posts->url(1),
-                'last'  => $posts->url($posts->lastPage()),
-                'prev'  => $posts->previousPageUrl(),
-                'next'  => $posts->nextPageUrl(),
+                'last' => $posts->url($posts->lastPage()),
+                'prev' => $posts->previousPageUrl(),
+                'next' => $posts->nextPageUrl(),
             ],
         ], __('messages.posts_retrieved'));
     }
