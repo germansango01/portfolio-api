@@ -17,4 +17,8 @@ return [
     'invalid_verification_link' => 'Enlace de verificación inválido.',
     'email_verified_successfully' => 'Correo electrónico verificado con éxito.',
     'unauthenticated' => 'No estás autenticado.',
+    'password_reset_link_sent' => 'Se ha enviado el enlace de recuperación de contraseña a tu correo.',
+    'password_reset_link_failed' => 'No se pudo enviar el enlace de recuperación. Verifica tu correo.',
+    'password_reset_success' => 'Tu contraseña ha sido restablecida correctamente.',
+    'password_reset_failed' => 'El restablecimiento de contraseña falló. Verifica los datos ingresados.',
 ];

@@ -17,4 +17,8 @@ return [
     'invalid_verification_link' => 'Invalid verification link.',
     'email_verified_successfully' => 'Email verified successfully.',
     'unauthenticated' => 'You are not authenticated.',
+    'password_reset_link_sent' => 'A password reset link has been sent to your email.',
+    'password_reset_link_failed' => 'Failed to send password reset link. Check your email.',
+    'password_reset_success' => 'Your password has been reset successfully.',
+    'password_reset_failed' => 'Password reset failed. Check the entered data.',
 ];
