@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Http\Requests\ForgotPasswordRequest;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
+use App\Http\Requests\ResetPasswordRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Auth\Events\Verified;
@@ -12,6 +14,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
 
@@ -197,27 +200,29 @@ class AuthController extends BaseController
      * path="/api/v1/password/forgot",
      * summary="Request password reset link",
      * tags={"Auth"},
-     * @OA\RequestBody(
-     * required=true,
-     * @OA\JsonContent(
-     *   @OA\Property(property="email", type="string", format="email", example="user@example.com")
-     * )
-     * ),
+     * @OA\RequestBody(required=true, @OA\JsonContent(ref="#/components/schemas/ForgotPasswordRequest")),
      * @OA\Response(response=200, description="Password reset link sent successfully"),
      * @OA\Response(response=400, description="Failed to send password reset link")
      * )
      */
-    public function forgotPassword(Request $request): JsonResponse
+    public function forgotPassword(ForgotPasswordRequest $request): JsonResponse
     {
-        $request->validate(['email' => 'required|email']);
+        $user = User::where('email', $request->email)->first();
 
-        $status = Password::sendResetLink($request->only('email'));
-
-        if ($status === Password::RESET_LINK_SENT) {
-            return $this->sendSuccess(__('auth.password_reset_link_sent'));
+        if (! $user) {
+            return $this->sendError(__('auth.password_reset_link_failed'), Response::HTTP_BAD_REQUEST);
         }
 
-        return $this->sendError(__('auth.password_reset_link_failed'), Response::HTTP_BAD_REQUEST);
+        $token = Str::random(64);
+
+        DB::table('password_resets')->updateOrInsert(
+            ['email' => $user->email],
+            ['token' => Hash::make($token), 'created_at' => now()],
+        );
+
+        $user->notify(new ResetPasswordNotification($token, $user->email));
+
+        return $this->sendSuccess(__('auth.password_reset_link_sent'));
     }
 
     /**
@@ -225,43 +230,32 @@ class AuthController extends BaseController
      * path="/api/v1/password/reset",
      * summary="Reset user password and return API token",
      * tags={"Auth"},
-     * @OA\RequestBody(
-     * required=true,
-     * @OA\JsonContent(
-     *   @OA\Property(property="email", type="string", format="email", example="user@example.com"),
-     *   @OA\Property(property="token", type="string", example="reset-token"),
-     *   @OA\Property(property="password", type="string", format="password", example="newpassword"),
-     *   @OA\Property(property="password_confirmation", type="string", format="password", example="newpassword")
-     * )
-     * ),
+     * @OA\RequestBody(required=true, @OA\JsonContent(ref="#/components/schemas/ResetPasswordRequest")),
      * @OA\Response(response=200, description="Password reset successful with token"),
      * @OA\Response(response=400, description="Password reset failed")
      * )
      */
-    public function resetPassword(Request $request): JsonResponse
+    public function resetPassword(ResetPasswordRequest $request): JsonResponse
     {
-        $request->validate([
-            'token' => 'required',
-            'email' => 'required|email',
-            'password' => 'required|min:8|confirmed',
-        ]);
+        $record = DB::table('password_resets')->where('email', $request->email)->first();
 
-        $status = Password::reset(
-            $request->only('email', 'password', 'password_confirmation', 'token'),
-            function ($user, $password) {
-                $user->forceFill([
-                    'password' => Hash::make($password),
-                ])->save();
-            },
-        );
-
-        if ($status === Password::PASSWORD_RESET) {
-            $user = User::where('email', $request->email)->first();
-            $token = $user->createToken('API Token')->accessToken;
-
-            return $this->sendData(['token' => $token], __('auth.password_reset_success'));
+        if (! $record || ! Hash::check($request->token, $record->token)) {
+            return $this->sendError(__('auth.password_reset_failed'), Response::HTTP_BAD_REQUEST);
         }
 
-        return $this->sendError(__('auth.password_reset_failed'), Response::HTTP_BAD_REQUEST);
+        $user = User::where('email', $request->email)->first();
+
+        if (! $user) {
+            return $this->sendError(__('auth.password_reset_failed'), Response::HTTP_BAD_REQUEST);
+        }
+
+        $user->password = Hash::make($request->password);
+        $user->save();
+
+        DB::table('password_resets')->where('email', $request->email)->delete();
+
+        $token = $user->createToken('API Token')->accessToken;
+
+        return $this->sendData(['token' => $token], __('auth.password_reset_success'));
     }
 }
