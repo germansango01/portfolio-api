@@ -9,7 +9,7 @@ use Illuminate\Http\Response;
 /**
  * @OA\Info(
  * title="Portfolio API",
- * version="1.0.0",
+ * version="1.0.1",
  * description="API for the portfolio",
  * @OA\Contact(
  * email="support@example.com",
