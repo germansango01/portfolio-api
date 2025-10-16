@@ -83,13 +83,13 @@ class AuthController extends BaseController
         $user = User::findOrFail($request->route('id'));
 
         if ($user->hasVerifiedEmail()) {
-            return redirect(env('FRONTEND_AUTH_URL') . '?status=already-verified');
+            return redirect(env('FRONTEND_AUTH_URL') . '/verify?status=already-verified');
         }
 
         $user->markEmailAsVerified();
         event(new Verified($user));
 
-        return redirect(env('FRONTEND_AUTH_URL') . '?status=success');
+        return redirect(env('FRONTEND_AUTH_URL') . '/verify?status=success');
     }
 
     /**
@@ -112,6 +112,50 @@ class AuthController extends BaseController
             return $this->sendError(__('auth.email_already_verified'), 400);
         }
 
+        $user->sendEmailVerificationNotification();
+
+        return $this->sendSuccess(__('auth.verification_link_resent'));
+    }
+
+    /**
+     * @OA\Post(
+     * path="/api/v1/email/resend-guest",
+     * summary="Resend email verification link (public: requires only email)",
+     * tags={"Auth"},
+     * @OA\RequestBody(
+     * required=true,
+     * @OA\JsonContent(
+     * @OA\Property(property="email", type="string", format="email", example="unverified@example.com")
+     * )
+     * ),
+     * @OA\Response(response=200, description="Returns success message if email is valid, regardless of whether user exists or not, to prevent user enumeration."),
+     * @OA\Response(response=400, description="Email already verified.",
+     * @OA\JsonContent(
+     * @OA\Property(property="success", type="boolean", example=false),
+     * @OA\Property(property="message", type="string", example="Email already verified.")
+     * )
+     * ),
+     * @OA\Response(response=422, description="Validation error.")
+     * )
+     */
+    public function resendVerificationLink(Request $request): JsonResponse
+    {
+        // 1. Validación simple para asegurar que el formato del email es correcto
+        $request->validate(['email' => 'required|email']);
+
+        $user = User::where('email', $request->email)->first();
+
+        // 2. Si el usuario no existe, devolvemos éxito para evitar enumeración de usuarios
+        if (! $user) {
+            return $this->sendSuccess(__('auth.verification_link_sent_if_unverified'));
+        }
+
+        // 3. Si ya está verificado, devolvemos un error
+        if ($user->hasVerifiedEmail()) {
+            return $this->sendError(__('auth.email_already_verified'), Response::HTTP_BAD_REQUEST);
+        }
+
+        // 4. Reenviar correo
         $user->sendEmailVerificationNotification();
 
         return $this->sendSuccess(__('auth.verification_link_resent'));
