@@ -3,6 +3,7 @@
 namespace Tests\Feature\Http\Controllers\Api;
 
 use App\Models\User;
+use App\Notifications\CustomVerifyEmail;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Notification;
@@ -165,10 +166,10 @@ class AuthControllerTest extends TestCase
         $response->assertRedirect(env('FRONTEND_AUTH_URL') . '/verify?status=already-verified');
     }
 
-    public function test_verify_email_with_invalid_signature_returns_403()
+    public function test_verify_email_with_invalid_route_returns_403()
     {
         $user = User::factory()->create(['email_verified_at' => null]);
-        $invalidUrl = route('api.v1.verification.verify', ['id' => $user->id, 'hash' => 'invalid-hash']);
+        $invalidUrl = '/api/v1/email/verify/' . $user->id . '/invalid-hash';
 
         $response = $this->get($invalidUrl);
 
@@ -183,7 +184,154 @@ class AuthControllerTest extends TestCase
             [
                 'id' => $user->id,
                 'hash' => sha1($user->getEmailForVerification()),
-            ]
+            ],
         );
+    }
+
+    public function test_resend_sends_verification_email_to_unverified_user()
+    {
+        Notification::fake();
+
+        $user = User::factory()->create(['email_verified_at' => null]);
+        Passport::actingAs($user);
+
+        $response = $this->postJson(route('api.v1.verification.send'));
+
+        $response->assertOk()
+            ->assertJson([
+                'success' => true,
+                'message' => __('auth.verification_link_resent'),
+            ]);
+
+        Notification::assertSentTo($user, CustomVerifyEmail::class);
+    }
+
+    public function test_resend_returns_error_for_verified_user()
+    {
+        $user = User::factory()->create();
+        Passport::actingAs($user);
+
+        $response = $this->postJson(route('api.v1.verification.send'));
+
+        $response->assertStatus(400)
+            ->assertJson([
+                'success' => false,
+                'message' => __('auth.email_already_verified'),
+            ]);
+    }
+
+    public function test_resend_verification_link_sends_email_to_unverified_user()
+    {
+        Notification::fake();
+
+        $user = User::factory()->create(['email_verified_at' => null]);
+
+        $response = $this->postJson(route('api.v1.verification.resend.guest'), ['email' => $user->email]);
+
+        $response->assertOk()
+            ->assertJson([
+                'success' => true,
+                'message' => __('auth.verification_link_resent'),
+            ]);
+
+        Notification::assertSentTo($user, CustomVerifyEmail::class);
+    }
+
+    public function test_resend_verification_link_returns_error_for_verified_user()
+    {
+        $user = User::factory()->create();
+
+        $response = $this->postJson(route('api.v1.verification.resend.guest'), ['email' => $user->email]);
+
+        $response->assertStatus(400)
+            ->assertJson([
+                'success' => false,
+                'message' => __('auth.email_already_verified'),
+            ]);
+    }
+
+    public function test_resend_verification_link_returns_success_for_non_existent_user()
+    {
+        $response = $this->postJson(route('api.v1.verification.resend.guest'), ['email' => 'nonexistent@example.com']);
+
+        $response->assertOk()
+            ->assertJson([
+                'success' => true,
+                'message' => __('auth.verification_link_sent_if_unverified'),
+            ]);
+    }
+
+    public function test_forgot_password_sends_reset_link()
+    {
+        Notification::fake();
+
+        $user = User::factory()->create();
+
+        $response = $this->postJson(route('api.v1.password.forgot'), ['email' => $user->email]);
+
+        $response->assertOk()
+            ->assertJson([
+                'success' => true,
+                'message' => __('auth.password_reset_link_sent'),
+            ]);
+
+        Notification::assertSentTo($user, \App\Notifications\ResetPasswordNotification::class);
+    }
+
+    public function test_forgot_password_returns_error_for_non_existent_user()
+    {
+        $response = $this->postJson(route('api.v1.password.forgot'), ['email' => 'nonexistent@example.com']);
+
+        $response->assertStatus(400)
+            ->assertJson([
+                'success' => false,
+                'message' => __('auth.password_reset_link_failed'),
+            ]);
+    }
+
+    public function test_reset_password_resets_password_and_returns_token()
+    {
+        $user = User::factory()->create();
+        $token = 'test-token';
+
+        \Illuminate\Support\Facades\DB::table('password_resets')->insert([
+            'email' => $user->email,
+            'token' => $token,
+            'created_at' => now(),
+        ]);
+
+        $response = $this->postJson(route('api.v1.password.reset'), [
+            'email' => $user->email,
+            'token' => $token,
+            'password' => 'new-password',
+            'password_confirmation' => 'new-password',
+        ]);
+
+        $response->assertOk()
+            ->assertJsonStructure([
+                'success',
+                'message',
+                'data' => ['token'],
+            ]);
+
+        $this->assertTrue(Hash::check('new-password', $user->fresh()->password));
+    }
+
+    public function test_reset_password_returns_error_with_invalid_token()
+    {
+        $user = User::factory()->create();
+
+        $response = $this->postJson(route('api.v1.password.reset'), [
+            'email' => $user->email,
+            'token' => 'invalid-token',
+            'password' => 'new-password',
+            'password_confirmation' => 'new-password',
+        ]);
+
+        $response->assertStatus(400)
+            ->assertJson([
+                'success' => false,
+                'message' => __('auth.password_reset_failed'),
+            ]);
     }
 }
