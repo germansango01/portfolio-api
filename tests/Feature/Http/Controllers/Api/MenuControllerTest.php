@@ -27,7 +27,7 @@ class MenuControllerTest extends TestCase
         $menu = Menu::factory()->create();
         MenuItem::factory()->count(3)->create(['menu_id' => $menu->id]);
 
-        $response = $this->getJson(route('api.menu.index', $menu->id));
+        $response = $this->getJson(route('api.v1.menu.index', $menu->id));
 
         $response->assertOk()
             ->assertJsonStructure([
@@ -44,7 +44,7 @@ class MenuControllerTest extends TestCase
     {
         $this->authenticate();
 
-        $response = $this->getJson(route('api.menu.index', 999));
+        $response = $this->getJson(route('api.v1.menu.index', 999));
 
         $response->assertStatus(404)
             ->assertJsonStructure([

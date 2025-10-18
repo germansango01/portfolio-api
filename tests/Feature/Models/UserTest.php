@@ -25,12 +25,12 @@ class UserTest extends TestCase
     {
         $user = new User([
             'name' => 'Test User',
-            'email' => 'test@example.com',
+            'email' => 'test@gmail.com',
             'password' => bcrypt('password'),
         ]);
 
         $this->assertEquals('Test User', $user->name);
-        $this->assertEquals('test@example.com', $user->email);
+        $this->assertEquals('test@gmail.com', $user->email);
         $this->assertTrue(password_verify('password', $user->password));
     }
 
