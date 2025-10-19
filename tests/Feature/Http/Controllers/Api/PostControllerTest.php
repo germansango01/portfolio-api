@@ -22,13 +22,13 @@ class PostControllerTest extends TestCase
         return $user;
     }
 
-    public function test_resume_returns_blog_data()
+    public function test_summary_returns_blog_data()
     {
         $user = $this->authenticate();
         Post::factory()->count(10)->for($user)->create();
         Category::factory()->count(2)->create();
 
-        $response = $this->getJson(route('api.v1.posts.resume'));
+        $response = $this->getJson(route('api.v1.posts.summary'));
 
         $response->assertOk()
             ->assertJsonStructure([
@@ -152,15 +152,23 @@ class PostControllerTest extends TestCase
                 'success',
                 'message',
                 'data' => [
-                    'id',
-                    'title',
-                    'slug',
-                    'content',
-                    'views',
-                    'created_at',
-                    'updated_at',
+                    'post' => [
+                        'id',
+                        'title',
+                        'slug',
+                        'content',
+                        'views',
+                        'created_at',
+                        'updated_at',
+                    ],
                 ],
             ]);
+
+        // Validamos que los valores coincidan
+        $this->assertEquals($post->id, $response->json('data.post.id'));
+        $this->assertEquals($post->title, $response->json('data.post.title'));
+        $this->assertEquals($post->slug, $response->json('data.post.slug'));
+        $this->assertEquals($post->content, $response->json('data.post.content'));
     }
 
     public function test_show_returns_not_found_for_invalid_post()

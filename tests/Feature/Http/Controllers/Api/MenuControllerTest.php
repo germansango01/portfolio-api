@@ -24,16 +24,31 @@ class MenuControllerTest extends TestCase
     {
         $this->authenticate();
 
-        // Creamos menú y items activos
+        // Creamos un menú
         $menu = Menu::factory()->create();
-        $menuItems = MenuItem::factory()->count(3)->create([
-            'menu_id' => $menu->id,
-            'is_active' => 1, // asegurar que todos sean devueltos
+
+        // Creamos 3 items con posición fija
+        $menuItems = collect([
+            MenuItem::factory()->create([
+                'menu_id' => $menu->id,
+                'position' => 1,
+                'is_active' => 1,
+            ]),
+            MenuItem::factory()->create([
+                'menu_id' => $menu->id,
+                'position' => 2,
+                'is_active' => 1,
+            ]),
+            MenuItem::factory()->create([
+                'menu_id' => $menu->id,
+                'position' => 3,
+                'is_active' => 1,
+            ]),
         ]);
 
         $response = $this->getJson(route('api.v1.menus.index', $menu->id));
 
-        // Validamos estructura general
+        // Validamos la estructura del JSON
         $response->assertOk()
             ->assertJsonStructure([
                 'success',
@@ -58,9 +73,9 @@ class MenuControllerTest extends TestCase
                 ],
             ])
             ->assertJsonPath('success', true)
-            ->assertJsonCount($menuItems->count(), 'data.menus'); // usar count real
+            ->assertJsonCount($menuItems->count(), 'data.menus');
 
-        // Validar que cada menuItem devuelto coincide con la BD
+        // Validamos que cada item coincida con la BD, usando el orden por posición
         foreach ($menuItems as $index => $item) {
             $this->assertEquals($item->id, $response->json("data.menus.$index.id"));
             $this->assertEquals($item->label, $response->json("data.menus.$index.label"));

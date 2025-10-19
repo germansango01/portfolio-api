@@ -14,47 +14,19 @@ use Illuminate\Http\JsonResponse;
 
 class PostController extends BaseController
 {
-    /**
-     * @OA\Get(
-     *     path="/api/v1/posts",
-     *     summary="Retrieve all posts",
-     *     tags={"Blog"},
-     *     @OA\Parameter(name="page", in="query", description="Page number", @OA\Schema(type="integer")),
-     *     @OA\Parameter(name="per_page", in="query", description="Items per page", @OA\Schema(type="integer")),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Posts retrieved successfully."
-     *     )
-     * )
-     */
     public function index(PostRequest $request): JsonResponse
     {
-        $query = Post::query()->withRelations()->latest();
+        $query = Post::with(['user', 'category', 'tags'])->latest();
 
         return $this->paginateAndRespond($query, $request->validated());
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/v1/posts/summary",
-     *     summary="Retrieve summary post data",
-     *     tags={"Blog"},
-     *     @OA\Response(
-     *         response=200,
-     *         description="Summary retrieved successfully."
-     *     )
-     * )
-     */
     public function summary(): JsonResponse
     {
-        $latestPosts = Post::query()->withRelations()->latest()->limit(5)->get();
-        $mostViewedPosts = Post::query()->withRelations()->orderByDesc('views')->limit(5)->get();
+        $latestPosts = Post::with(['user', 'category', 'tags'])->latest()->limit(5)->get();
+        $mostViewedPosts = Post::with(['user', 'category', 'tags'])->orderByDesc('views')->limit(5)->get();
 
-        $categories = Category::select('id', 'name', 'slug')
-            ->with(['posts' => function ($query) {
-                $query->withRelations()->latest()->limit(5);
-            }])
-            ->get();
+        $categories = Category::with(['posts' => fn($q) => $q->with(['user', 'tags'])->latest()->limit(5)])->get();
 
         $postsByCategory = $categories->map(fn($category) => [
             'id' => $category->id,
@@ -70,28 +42,11 @@ class PostController extends BaseController
         ], __('messages.blog_retrieved'));
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/v1/posts/search",
-     *     summary="Search for posts",
-     *     tags={"Blog"},
-     *     @OA\Parameter(name="q", in="query", description="Search term", @OA\Schema(type="string")),
-     *     @OA\Parameter(name="category", in="query", description="Category slug", @OA\Schema(type="string")),
-     *     @OA\Parameter(name="author", in="query", description="Author ID", @OA\Schema(type="integer")),
-     *     @OA\Parameter(name="tag", in="query", description="Tag slug", @OA\Schema(type="string")),
-     *     @OA\Parameter(name="page", in="query", description="Page number", @OA\Schema(type="integer")),
-     *     @OA\Parameter(name="per_page", in="query", description="Items per page", @OA\Schema(type="integer")),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Posts retrieved successfully."
-     *     )
-     * )
-     */
     public function search(SearchRequest $request): JsonResponse
     {
         $validated = $request->validated();
 
-        $query = Post::query()->withRelations()
+        $query = Post::with(['user', 'category', 'tags'])
             ->searchTerm($validated['q'] ?? null)
             ->filterByCategory($validated['category'] ?? null)
             ->filterByAuthor($validated['author'] ?? null)
@@ -101,159 +56,36 @@ class PostController extends BaseController
         return $this->paginateAndRespond($query, $validated);
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/v1/posts/category/{categorySlug}",
-     *     summary="Retrieve posts by category",
-     *     tags={"Blog"},
-     *     @OA\Parameter(
-     *         name="categorySlug",
-     *         in="path",
-     *         required=true,
-     *         description="Category slug",
-     *         @OA\Schema(type="string")
-     *     ),
-     *     @OA\Parameter(name="page", in="query", description="Page number", @OA\Schema(type="integer")),
-     *     @OA\Parameter(name="per_page", in="query", description="Items per page", @OA\Schema(type="integer")),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Posts retrieved successfully."
-     *     ),
-     *     @OA\Response(
-     *         response=404,
-     *         description="Category not found."
-     *     )
-     * )
-     */
-    public function postsByCategory(PostRequest $request, string $categorySlug): JsonResponse
+    public function postsByCategory(PostRequest $request, Category $category): JsonResponse
     {
-        $category = Category::where('slug', $categorySlug)->first();
-
-        if (! $category) {
-            return $this->sendError(__('messages.category_not_found'), 404);
-        }
-
-        $query = Post::query()->withRelations()->where('category_id', $category->id)->latest();
-
+        $query = Post::with(['user', 'category', 'tags'])->where('category_id', $category->id)->latest();
         return $this->paginateAndRespond($query, $request->validated());
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/v1/posts/tag/{tagSlug}",
-     *     summary="Retrieve posts by tag",
-     *     tags={"Blog"},
-     *     @OA\Parameter(
-     *         name="tagSlug",
-     *         in="path",
-     *         required=true,
-     *         description="Tag slug",
-     *         @OA\Schema(type="string")
-     *     ),
-     *     @OA\Parameter(name="page", in="query", description="Page number", @OA\Schema(type="integer")),
-     *     @OA\Parameter(name="per_page", in="query", description="Items per page", @OA\Schema(type="integer")),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Posts retrieved successfully."
-     *     ),
-     *     @OA\Response(
-     *         response=404,
-     *         description="Tag not found."
-     *     )
-     * )
-     */
-    public function postsByTag(PostRequest $request, string $tagSlug): JsonResponse
+    public function postsByTag(PostRequest $request, Tag $tag): JsonResponse
     {
-        $tag = Tag::where('slug', $tagSlug)->first();
-
-        if (! $tag) {
-            return $this->sendError(__('messages.tag_not_found'), 404);
-        }
-
-        $query = Post::query()->withRelations()
-            ->whereHas('tags', function (Builder $query) use ($tag) {
-                $query->where('tags.id', $tag->id);
-            })
+        $query = Post::with(['user', 'category', 'tags'])
+            ->whereHas('tags', fn(Builder $q) => $q->where('tags.id', $tag->id))
             ->latest();
 
         return $this->paginateAndRespond($query, $request->validated());
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/v1/posts/user/{userId}",
-     *     summary="Retrieve posts by user",
-     *     tags={"Blog"},
-     *     @OA\Parameter(
-     *         name="userId",
-     *         in="path",
-     *         required=true,
-     *         description="User ID",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Parameter(name="page", in="query", description="Page number", @OA\Schema(type="integer")),
-     *     @OA\Parameter(name="per_page", in="query", description="Items per page", @OA\Schema(type="integer")),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Posts retrieved successfully."
-     *     ),
-     *     @OA\Response(
-     *         response=404,
-     *         description="User not found."
-     *     )
-     * )
-     */
-    public function postsByUser(PostRequest $request, int $userId): JsonResponse
+    public function postsByUser(PostRequest $request, User $user): JsonResponse
     {
-        $user = User::find($userId);
-
-        if (! $user) {
-            return $this->sendError(__('messages.user_not_found'), 404);
-        }
-
-        $query = Post::query()->withRelations()->where('user_id', $user->id)->latest();
-
+        $query = Post::with(['user', 'category', 'tags'])->where('user_id', $user->id)->latest();
         return $this->paginateAndRespond($query, $request->validated());
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/v1/posts/{slug}",
-     *     summary="Retrieve a single post",
-     *     tags={"Blog"},
-     *     @OA\Parameter(
-     *         name="slug",
-     *         in="path",
-     *         required=true,
-     *         description="Post slug",
-     *         @OA\Schema(type="string")
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Post retrieved successfully."
-     *     ),
-     *     @OA\Response(
-     *         response=404,
-     *         description="Post not found."
-     *     )
-     * )
-     */
-    public function show(string $slug): JsonResponse
+    public function show(Post $post): JsonResponse
     {
-        $post = Post::query()->withRelations()->where('slug', $slug)->first();
-
-        if (! $post) {
-            return $this->sendError(__('messages.post_not_found'), 404);
-        }
+        $post->load(['user', 'category', 'tags']);
 
         return $this->sendData([
             'post' => PostResource::make($post)->resolve(),
         ], __('messages.post_retrieved'));
     }
 
-    /**
-     * Paginate the query and format the response.
-     */
     private function paginateAndRespond(Builder $query, array $validated): JsonResponse
     {
         $posts = $query->paginate(
