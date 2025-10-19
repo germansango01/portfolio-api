@@ -72,14 +72,13 @@ class MenuItemResource extends JsonResource
             'id' => $this->id,
             'label' => $this->label,
             'icon' => $this->icon,
-            'route' => $this->url,
-            // 'url' => $this->url,
-            'shortcut' => $this->shortcut,
+            'route' => $this->route,
             'position' => $this->position,
-            'parent_id' => $this->parent_id,
-            'items' => $this->whenLoaded('children', function () {
-                return $this->children->isNotEmpty() ? self::collection($this->children) : null;
-            }),
+            'is_external' => $this->is_external,
+            'menu_id' => $this->menu_id,
+            'children' => $this->relationLoaded('children')
+                ? MenuItemResource::collection($this->children)->toArray($request)
+                : [],
         ];
     }
 }

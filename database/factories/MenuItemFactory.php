@@ -37,7 +37,8 @@ class MenuItemFactory extends Factory
         return [
             'label' => $this->faker->unique()->word,
             'icon' => Arr::random($primeIcons),
-            'url' => $rand ? $this->faker->url : $this->faker->regexify("/category/[a-z]{6,14}") ,
+            'route' => $rand ? null : $this->faker->regexify("/category/[a-z]{6,14}"),
+            'url' => $rand ? $this->faker->url : null,
             'is_external' => $rand,
             'position' => $this->faker->numberBetween(1, 10),
             'parent_id' => null,

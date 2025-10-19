@@ -18,7 +18,14 @@ class MenuItem extends Model
      * @var list<string>
      */
     protected $fillable = [
-        'label', 'icon', 'route', 'url', 'shortcut', 'parent_id', 'position', 'menu_id',
+        'menu_id', 'parent_id', 'label', 'icon', 'route', 'url',
+        'is_external', 'is_active', 'shortcut', 'position',
+    ];
+
+    protected $casts = [
+        'is_external' => 'integer',
+        'is_active' => 'boolean',
+        'position' => 'integer',
     ];
 
     /**

@@ -18,11 +18,12 @@ return new class extends Migration {
             $table->id();
             $table->string('label')->unique();
             $table->text('icon')->nullable();
+            $table->string('route')->nullable();
             $table->string('url')->nullable();
-            $table->boolean('is_external');
+            $table->boolean('is_external')->default(false);
             $table->boolean('is_active')->default(true);
             $table->integer('position')->nullable(false);
-            $table->integer('parent_id')->nullable();
+            $table->foreignId('parent_id')->nullable()->constrained('menu_items')->onDelete('cascade');
             $table->foreignId('menu_id')->constrained()->onDelete('cascade');
             $table->timestamps();
         });
