@@ -18,7 +18,7 @@ class Post extends Model
      *
      * @var list<string>
      */
-    protected $fillable = ['title', 'slug', 'content'];
+    protected $fillable = ['title', 'slug', 'content', 'views', 'image_url', 'category_id', 'user_id'];
 
     /**
      * Get the user that owns the post.

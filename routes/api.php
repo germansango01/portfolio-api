@@ -15,7 +15,6 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('v1')->name('api.v1.')->group(function () {
 
     /* -------------------- RUTAS PÚBLICAS -------------------- */
-
     Route::group(['middleware' => ['throttle:login']], function () {
         Route::controller(AuthController::class)->group(function () {
             Route::post('/register', 'register')->name('register');
@@ -42,7 +41,7 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
 
         Route::controller(CategoryController::class)->group(function () {
             Route::get('/categories', 'index')->name('categories.index');
-            Route::get('/category/{slug}', 'show')->name('categories.show');
+            Route::get('/category/{category:slug}', 'show')->name('categories.show');
         });
 
         Route::get('/menus/{menu:id}', [MenuController::class, 'index'])->name('menus.index');
@@ -53,7 +52,7 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
             Route::get('/posts/category/{category:slug}', 'postsByCategory')->name('posts.byCategory');
             Route::get('/posts/tag/{tag:slug}', 'postsByTag')->name('posts.byTag');
             Route::get('/posts/user/{user}', 'postsByUser')->name('posts.byUser');
-            Route::get('/posts/{slug}', 'show')->name('posts.show');
+            Route::get('/posts/{post:slug}', 'show')->name('posts.show');
             Route::get('/posts', 'index')->name('posts.index');
         });
 
@@ -61,6 +60,5 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
             Route::get('/tags', 'index')->name('tags.index');
             Route::get('/tag/{slug}', 'show')->name('tags.show');
         });
-
     });
 });

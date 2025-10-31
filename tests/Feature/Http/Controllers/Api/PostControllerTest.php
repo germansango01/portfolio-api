@@ -22,13 +22,13 @@ class PostControllerTest extends TestCase
         return $user;
     }
 
-    public function test_resume_returns_blog_data()
+    public function test_summary_returns_blog_data()
     {
         $user = $this->authenticate();
         Post::factory()->count(10)->for($user)->create();
         Category::factory()->count(2)->create();
 
-        $response = $this->getJson(route('api.posts.resume'));
+        $response = $this->getJson(route('api.v1.posts.summary'));
 
         $response->assertOk()
             ->assertJsonStructure([
@@ -47,7 +47,7 @@ class PostControllerTest extends TestCase
         $user = $this->authenticate();
         Post::factory()->count(20)->for($user)->create();
 
-        $response = $this->getJson(route('api.posts.search', ['q' => 'post']));
+        $response = $this->getJson(route('api.v1.posts.search', ['q' => 'post']));
 
         $response->assertOk()
             ->assertJsonStructure([
@@ -66,7 +66,7 @@ class PostControllerTest extends TestCase
         $user = $this->authenticate();
         Post::factory()->count(15)->for($user)->create();
 
-        $response = $this->getJson(route('api.posts.index'));
+        $response = $this->getJson(route('api.v1.posts.index'));
 
         $response->assertOk()
             ->assertJsonStructure([
@@ -86,7 +86,7 @@ class PostControllerTest extends TestCase
         $category = Category::factory()->create();
         Post::factory()->count(5)->for($user)->for($category)->create();
 
-        $response = $this->getJson(route('api.posts.byCategory', $category->slug));
+        $response = $this->getJson(route('api.v1.posts.byCategory', $category->slug));
 
         $response->assertOk()
             ->assertJsonStructure([
@@ -107,7 +107,7 @@ class PostControllerTest extends TestCase
         $post = Post::factory()->for($user)->create();
         $post->tags()->attach($tag);
 
-        $response = $this->getJson(route('api.posts.byTag', $tag->slug));
+        $response = $this->getJson(route('api.v1.posts.byTag', $tag->slug));
 
         $response->assertOk()
             ->assertJsonStructure([
@@ -126,7 +126,7 @@ class PostControllerTest extends TestCase
         $user = $this->authenticate();
         Post::factory()->count(3)->for($user)->create();
 
-        $response = $this->getJson(route('api.posts.byUser', $user->id));
+        $response = $this->getJson(route('api.v1.posts.byUser', $user->id));
 
         $response->assertOk()
             ->assertJsonStructure([
@@ -145,29 +145,37 @@ class PostControllerTest extends TestCase
         $user = $this->authenticate();
         $post = Post::factory()->for($user)->create();
 
-        $response = $this->getJson(route('api.posts.show', $post->slug));
+        $response = $this->getJson(route('api.v1.posts.show', $post->slug));
 
         $response->assertOk()
             ->assertJsonStructure([
                 'success',
                 'message',
                 'data' => [
-                    'id',
-                    'title',
-                    'slug',
-                    'content',
-                    'views',
-                    'created_at',
-                    'updated_at',
+                    'post' => [
+                        'id',
+                        'title',
+                        'slug',
+                        'content',
+                        'views',
+                        'created_at',
+                        'updated_at',
+                    ],
                 ],
             ]);
+
+        // Validamos que los valores coincidan
+        $this->assertEquals($post->id, $response->json('data.post.id'));
+        $this->assertEquals($post->title, $response->json('data.post.title'));
+        $this->assertEquals($post->slug, $response->json('data.post.slug'));
+        $this->assertEquals($post->content, $response->json('data.post.content'));
     }
 
     public function test_show_returns_not_found_for_invalid_post()
     {
         $this->authenticate();
 
-        $response = $this->getJson(route('api.posts.show', 'invalid-slug'));
+        $response = $this->getJson(route('api.v1.posts.show', 'invalid-slug'));
 
         $response->assertNotFound();
     }
@@ -176,7 +184,7 @@ class PostControllerTest extends TestCase
     {
         $this->authenticate();
 
-        $response = $this->getJson(route('api.posts.byCategory', 'invalid-slug'));
+        $response = $this->getJson(route('api.v1.posts.byCategory', 'invalid-slug'));
 
         $response->assertNotFound();
     }
@@ -185,7 +193,7 @@ class PostControllerTest extends TestCase
     {
         $this->authenticate();
 
-        $response = $this->getJson(route('api.posts.byTag', 'invalid-slug'));
+        $response = $this->getJson(route('api.v1.posts.byTag', 'invalid-slug'));
 
         $response->assertNotFound();
     }
@@ -194,7 +202,7 @@ class PostControllerTest extends TestCase
     {
         $this->authenticate();
 
-        $response = $this->getJson(route('api.posts.byUser', 999));
+        $response = $this->getJson(route('api.v1.posts.byUser', 999));
 
         $response->assertNotFound();
     }
