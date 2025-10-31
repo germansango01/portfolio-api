@@ -15,7 +15,8 @@ class MenuItemSeeder extends Seeder
         MenuItem::factory()->create([
             'label' => "Home",
             'icon' => "pi pi-home",
-            'url' => "/",
+            'route' => "/",
+            'url' => null,
             'is_external' => 0,
             'position' => 1,
             'menu_id' => 1,
@@ -24,7 +25,8 @@ class MenuItemSeeder extends Seeder
         MenuItem::factory()->create([
             'label' => "Blog",
             'icon' => "pi pi-briefcase",
-            'url' => "/blog",
+            'route' => "/blog",
+            'url' => null,
             'is_external' => 0,
             'position' => 2,
             'menu_id' => 1,
@@ -33,7 +35,8 @@ class MenuItemSeeder extends Seeder
         MenuItem::factory()->create([
             'label' => "Categorias",
             'icon' => "pi pi-briefcase",
-            'url' => "/categorias",
+            'route' => "/categorias",
+            'url' => null,
             'is_external' => 0,
             'position' => 3,
             'menu_id' => 1,

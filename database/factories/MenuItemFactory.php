@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\MenuItem;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Arr;
 
@@ -10,6 +11,8 @@ use Illuminate\Support\Arr;
  */
 class MenuItemFactory extends Factory
 {
+    protected $model = MenuItem::class;
+
     /**
      * Define the model's default state.
      *
@@ -41,6 +44,7 @@ class MenuItemFactory extends Factory
             'url' => $rand ? $this->faker->url : null,
             'is_external' => $rand,
             'position' => $this->faker->numberBetween(1, 10),
+            'menu_id' => $this->faker->numberBetween(1, 10),
             'parent_id' => null,
         ];
     }

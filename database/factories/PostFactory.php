@@ -21,8 +21,6 @@ class PostFactory extends Factory
             'user_id' => User::factory(),
             'category_id' => Category::factory(),
             'views' => $this->faker->numberBetween(0, 100),
-            'created_at' => now(),
-            'updated_at' => now(),
         ];
     }
 }

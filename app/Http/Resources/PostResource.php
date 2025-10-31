@@ -20,10 +20,7 @@ class PostResource extends JsonResource
             'content' => $this->content,
             'excerpt' => Str::limit(strip_tags($this->content), 100),
             'image_url' => $this->image_url ?? null,
-            'created_at' => $this->created_at->format('Y-m-d H:i'),
-            'updated_at' => $this->updated_at->format('Y-m-d H:i'),
             'views' => $this->views,
-            // Relaciones
             'author' => $this->whenLoaded('user', fn() => [
                 'id' => $this->user->id,
                 'name' => $this->user->name,
@@ -38,6 +35,8 @@ class PostResource extends JsonResource
                 'name' => $tag->name,
                 'slug' => $tag->slug,
             ])),
+            'created_at' => $this->created_at?->format('Y-m-d H:i'),
+            'updated_at' => $this->updated_at?->format('Y-m-d H:i'),
             'comments_count' => $this->when(isset($this->comments_count), $this->comments_count),
         ];
     }

@@ -18,7 +18,6 @@ class CommentFactory extends Factory
     {
         return [
             'body' => $this->faker->sentence(15),
-            'created_at' => now(),
         ];
     }
 }
