@@ -19,6 +19,7 @@ class PostFactory extends Factory
             'slug' => Str::slug($this->faker->sentence),
             'content' => $this->faker->paragraph,
             'user_id' => User::factory(),
+            'image_url' => "https://picsum.photos/800/450",
             'category_id' => Category::factory(),
             'views' => $this->faker->numberBetween(0, 100),
         ];
