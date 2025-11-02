@@ -159,6 +159,11 @@ All post routes require authentication.
 | :--- | :--- | :--- | :--- |
 | `GET` | `/api/v1/menus/{menu:id}` | `menus.index` | Gets the structure of a specific menu. |
 
+### Test User
+name     = Administrador
+email    = admin@user.com
+password = admin123
+
 ---
 
 ## License
